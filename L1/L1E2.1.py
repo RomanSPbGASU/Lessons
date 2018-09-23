@@ -1,50 +1,36 @@
-#varin = {"initial": None, "rate": None, "term": None}
-func1 = lambda : float(input("Введите начальную сумму, ₽ = "))
-func2 = lambda : float(input("Введите размер ставки, % = "))
-func3 = lambda : float(input("Введите срок инвестирования, лет = "))
-funclist = [func1, func2, func3]
-print(funclist)
-print(type(funclist))
-print(funclist[1]())
-#def getinitial
-#for val in varin:
-#    varin[val] = float(input("Введите начальную сумму, ₽ = "))
-#    print(type(varin["initial"]))
+indict = {"initial": None, "rate": None, "term": None}
+funcinlist = [lambda : float(input("Введите начальную сумму, ₽ = ")),\
+              lambda : float(input("Введите размер ставки, % = ")),\
+              lambda : int(input("Введите срок инвестирования, лет = "))]
+i = 0
+for key in indict:   # добьёмся от пользователя ввода корректных данных
+    while 1:
+        try:
+            indict[key] = funcinlist[i]()
+            i += 1
+            break
+        except:
+            print("\tОшибка. Некорректный ввод")
+for i in range(90): print(end="_")
+print(None)
+print("\t\t\t\t\tСхема начисления процентов")
+print("\t\t\t Ежемесячно\tЕжеквартально\tРаз в полгода\tЕжегодно")
+lines = []
+out = list(range(4))
+# данные
+lines.append(["Начальная сумма, ₽:\t ", lambda garb : indict["initial"], None, out])
+lines.append(["Конечная сумма, ₽:\t ", lambda period : indict["initial"] * (1 + indict["rate"] / 100 * period / 12) ** (indict["term"] * 12 / period), (1,3,6,9), out])
+lines.append(["Доход, руб:\t\t ", lambda final : final - indict["initial"], lines[1][2], out])
+lines.append(["Доходность, % год.:\t ", lambda period: lines[2][2] / indict["initial"] / (indict["term"] * 12 / period) * 100, lines[1][2], out])
+# движок
+for title, func, input, output in lines:
+    print(title, end = "\t")    # поток выводится не сразу а только после символа конца строки
+    for i in range(4):
+        output[i] = func(input[i])
+        print(result[i], end = "\t")
+    print()
 
 
 
 
 
-
-
-#rateAmount = float(input("Введите размер ставки, % = "))
-#investmentTerm = int(input("Введите срок инвестирования, лет = "))
-#except ValueError:
-#    print("Ошибка ввода. Будут использованы значения по умолчанию:")
-#    print("Начальная сумма = 100000 ₽")
-#    print("Размер ставки = 10%")
-#    print("Срок инвестирования = 5 лет")
-#    initialAmount, rateAmount, investmentTerm = 100000, 10, 5
-#for i in range(90):
-#    print("_", end = "")
-#print()
-#print("\t\t\t\t\tСхема начисления процентов")
-#print("\t\t\t Ежемесячно\tЕжеквартально\tРаз в полгода\tЕжегодно")
-#print("Начальная сумма, ₽:\t " , end = "")
-#for i in range(4):
-#    print(float(round(initialAmount, 1)), end = "\t")
-#print()
-#def getFinalAmount(monthInPeriod):
-#    return initialAmount * (1 + rateAmount / 100 * monthInPeriod / 12) ** (investmentTerm * 12 / monthInPeriod)
-#MONTHLY, QUARTERLY, HALFYEARLY, YEARLY = 1, 3, 6, 12
-#finalAmountMonthly = getFinalAmount(MONTHLY)
-#finalAmountQuarterly = getFinalAmount(QUARTERLY)
-#finalAmountHalfyearly = getFinalAmount(HALFYEARLY)
-#finalAmountYearly = getFinalAmount(YEARLY)
-#print("Конечная сумма, ₽:\t ", round(finalAmountMonthly, 2), "\t", round(finalAmountQuarterly, 2), "\t", round(finalAmountHalfyearly, 2), "\t", round(finalAmountYearly, 2), sep = "")
-#incomeMonthly, incomeQuarterly, incomeHalfyearly, incomeYearly = finalAmountMonthly - initialAmount, finalAmountQuarterly - initialAmount, finalAmountHalfyearly - initialAmount, finalAmountYearly - initialAmount
-#print("Доход, руб:\t\t ", round(incomeMonthly, 2), "\t", round(incomeQuarterly, 2), "\t", round(incomeHalfyearly, 2), "\t", round(incomeYearly, 2), sep = "")
-#def getYield(income):
-#    return income / initialAmount * 1 / investmentTerm * 100
-#yieldMonthly, yieldQuarterly, yieldHalfyearly, yieldYearly = getYield(incomeMonthly), getYield(incomeQuarterly), getYield(incomeHalfyearly), getYield(incomeYearly)
-#print("Доходность, % год.:\t ", round(yieldMonthly, 2), "\t\t", round(yieldQuarterly, 2), "\t\t", round(yieldHalfyearly, 2), "\t\t", round(yieldYearly, 2), sep = "")
