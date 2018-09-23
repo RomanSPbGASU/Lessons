@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>3d9f4fc8-1036-4986-94fc-16a665039d16</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>L1.py</StartupFile>
+    <StartupFile>L1E2.1.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,7 +21,11 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="L1.py" />
+    <Compile Include="L1E2.1.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="L1E1.py" />
+    <Compile Include="L1E2.0.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
