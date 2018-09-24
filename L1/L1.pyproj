@@ -21,6 +21,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Collections.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="L1E2.1.py">
       <SubType>Code</SubType>
     </Compile>
