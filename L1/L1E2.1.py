@@ -1,6 +1,6 @@
 indict = {"initial": None, "rate": None, "term": None}
-funcinlist = [lambda : float(input("Введите начальную сумму, ₽ = ")),\
-              lambda : float(input("Введите размер ставки, % = ")),\
+funcinlist = [lambda : float(input("Введите начальную сумму, ₽ = ")),
+              lambda : float(input("Введите размер ставки, % = ")),
               lambda : int(input("Введите срок инвестирования, лет = "))]
 i = 0
 for key in indict:   # добьёмся от пользователя ввода корректных данных
@@ -11,30 +11,15 @@ for key in indict:   # добьёмся от пользователя ввода
             break
         except:
             print("\tОшибка. Некорректный ввод")
-for i in range(90): print(end="_")
-print(None)
 print("\t\t\t\t\tСхема начисления процентов")
-print("\t\t\t Ежемесячно\tЕжеквартально\tРаз в полгода\tЕжегодно")
-lines = []
-# данные
-lines.append(["Начальная сумма, ₽:\t ", lambda garb : indict["initial"], [None] * 4, [None] * 4])
-lines.append(["Конечная сумма, ₽:\t ", lambda period : indict["initial"] * (1 + indict["rate"] / 100 * period / 12) ** (indict["term"] * 12 / period), [1,3,6,9], [None] * 4])
-lines.append(["Доход, руб:\t\t ", lambda final : final - indict["initial"], lines[1][3], [None] * 4])
-lines.append(["Доходность, % год.:\t ", lambda income: income / indict["initial"] / indict["term"] * 100, lines[2][3], [None] * 4])
-
-
-#[[lines[1][2][i], lines[2][3][i]] for i in lines[1][2]]
-
-# движок
-for title, func, input, output in lines:
-    print(title, end = "\t")    # поток выводится не сразу а только после символа конца строки
-
+print("\t\t\tЕжемесячно     Ежеквартально  Раз в полгода  Ежегодно")
+lines = [["Начальная сумма, ₽:", lambda : indict["initial"], [None] * 4],
+["Конечная сумма, ₽:", lambda : indict["initial"] * (1 + indict["rate"] / 100 * [1,3,6,12][i] / 12) ** (indict["term"] * 12 / [1,3,6,12][i]), [None] * 4],
+["Доход, руб:", lambda : lines[1][2][i] - indict["initial"], [None] * 4],
+["Доходность, % год.:", lambda : lines[2][2][i] / indict["initial"] / indict["term"] * 100, [None] * 4]] # данные
+for title, func, output in lines: # движок
+    print(format(title, "22"), end = "\t")    # поток выводится не сразу а только после символа конца строки
     for i in range(4):
-        output[i] = func(input[i])
-        print(output[i], end = "\t")
+        output[i] = func()
+        print(format(output[i], "<15.2f"), end = "")
     print()
-
-
-
-
-
