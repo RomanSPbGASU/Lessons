@@ -16,5 +16,11 @@ print("Процентная ставка = %.2f %% год" % indict["rate"])
 print("Срок инвестирования = %d лет" % indict["term"])
 print("\t\t\t\t\t\t Простой процент\t   Сложный процент")
 print("Сумма, руб.   Доход за год, руб.   Сумма, руб.   Доход за год, руб.")
-import math
-print("Размер необходимой процентной ставки, % год.\t", round((indict["final"] / indict["initial"] - 1) * 100 / indict["term"], 2), "\t\t  ", round((math.pow(indict["final"] / indict["initial"], 1 / indict["term"]) - 1) * 100, 2))
+simple = complex = indict["initial"]
+for i in range(indict["term"]):
+    in_sim = simple
+    in_com = complex
+    simple *=  (1 + indict["rate"] / 100 * indict["term"])
+    complex *= (1 + indict["rate"] / 100) ** indict["term"]
+    in_sim -= -simple
+    print("%d-й год" % i, simple, in_sim, complex, in_com)
