@@ -2,15 +2,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>3d9f4fc8-1036-4986-94fc-16a665039d16</ProjectGuid>
+    <ProjectGuid>80e5fb3a-f286-4685-bb3c-f36c96f2e551</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>L1E3.py</StartupFile>
+    <StartupFile>L2E1.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>L1</Name>
-    <RootNamespace>L1</RootNamespace>
+    <Name>L2</Name>
+    <RootNamespace>L2</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,17 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Collections.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="L1E2.1.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="L1E1.py" />
-    <Compile Include="L1E2.0.py" />
-    <Compile Include="L1E3.py">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="L2E1.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
