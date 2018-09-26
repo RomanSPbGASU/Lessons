@@ -30,3 +30,4 @@ for i in range(0, monthLen[monthNum - 1] + firstWeekday - 1):
         print("\n")
     print(" ", end = "\t") if i + 1 < firstWeekday else print(i - firstWeekday + 2, end = "\t")
 print()
+
