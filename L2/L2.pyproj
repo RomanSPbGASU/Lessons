@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>80e5fb3a-f286-4685-bb3c-f36c96f2e551</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>L2E3.py</StartupFile>
+    <StartupFile>L2E4.2.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -28,9 +28,17 @@
     <Compile Include="L2E3.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="L2E4.py">
+    <Compile Include="L2E4.0.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="L2E4.2.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="L2E4.1.py">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
