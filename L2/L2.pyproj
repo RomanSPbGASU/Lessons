@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>80e5fb3a-f286-4685-bb3c-f36c96f2e551</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>L2E2.py</StartupFile>
+    <StartupFile>L2E1.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
