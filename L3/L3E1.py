@@ -15,7 +15,7 @@ def tb_print(*list):
     except AttributeError:
         tb_print.width = 40
     print(" " * 18, "|{0:{width}}|".format(*list, width = tb_print.width), sep = "")
-tb_print.width = 39
+tb_print.width = 39 # ширина таблички с исходными данными
 tb_print(chr(0x305) * tb_print.width)
 for line in pvars:
     tb_print(line)

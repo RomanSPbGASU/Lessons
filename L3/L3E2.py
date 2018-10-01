@@ -1,16 +1,16 @@
-indict = {"initial": None, "rate": None, "term": None}
-funcinlist = [lambda : float(input("Введите начальную сумму, ₽ = ")),
-              lambda : float(input("Введите размер ставки, % = ")),
-              lambda : int(input("Введите срок инвестирования, лет = "))]
+itext = ("Введите начальную сумму, ₽ = ", "Введите размер ставки, % = ", "Введите срок инвестирования, лет = ")
+t = (float, float, int)
+var = []
 i = 0
-for key in indict:   # добьёмся от пользователя ввода корректных данных
-    while 1:
-        try:
-            indict[key] = funcinlist[i]()
-            i += 1
-            break
-        except:
-            print("\tОшибка. Некорректный ввод")
+while i <= 2:
+    try:
+      var.append(t[i](input(itext[i])))
+    except (ValueError):
+        print('\x083', end= '')
+        print("\x08\x08Ошибка. Некорректный ввод")
+        continue
+    else:
+        i += 1
 print("\t\t\t\t\tСхема начисления процентов")
 print("\t\t\tЕжемесячно     Ежеквартально  Раз в полгода  Ежегодно")
 lines = [["Начальная сумма, ₽:", lambda : indict["initial"], [None] * 4],
