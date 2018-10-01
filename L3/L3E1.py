@@ -1,24 +1,39 @@
-try:
-    initialAmount = float(input("Введите начальную сумму, ₽ = "))
-    rateAmount = float(input("Введите размер ставки, % = "))
-    investmentTerm = int(input("Введите срок инвестирования, лет = "))
-except:
-    print("Ошибка ввода")
-    print("Начальная сумма = 100000 ₽")
-    print("Размер ставки = 10%")
-    print("Срок инвестирования = 5 лет")
-    initialAmount, rateAmount, investmentTerm = 100000, 10, 5
-finalAmountSimple = initialAmount * (1 + rateAmount / 100 * investmentTerm)
-finalAmountComplicated = initialAmount * (1 + rateAmount / 100) ** investmentTerm
-print("\t\t\t Простой процент Сложный процент")
-print("Начальная сумма, ₽:\t", round(initialAmount, 1), "\t", initialAmount)
-print("Конечная сумма, ₽:\t", round(finalAmountSimple, 1), "\t", round(finalAmountComplicated, 1))
-incomeSimple = finalAmountSimple - initialAmount
-incomeComplicated = finalAmountComplicated - initialAmount
-print("Доход, руб:\t\t", round(incomeSimple, 1), "\t", round(incomeComplicated, 1))
-def getYield(income, initial_amount, term):
-    return income/initial_amount*1/term*100
-yieldSimple = getYield(incomeSimple, initialAmount, investmentTerm)
-yieldComplicated = getYield(incomeComplicated, initialAmount, investmentTerm)
-print("Доходность, % год.:\t", round(yieldSimple, 1), "\t\t", round(yieldComplicated, 1))
+vars = init, rate, term = [10000, 10, 5]
+itext = ("Введите начальную сумму, ₽: ", "Введите размер ставки, %: ", "Введите срок инвестирования, лет: ")
+pvars = [" Сумма вклада = %.f ₽ ", " Процентная ставка = %.f%% ", " Срок инвестирования = %d лет "]
+t = (float, float, int)
+for i in range(3):
+    try:
+        vars[i] = t[i](input(itext[i]))
+    except:
+        pvars[i] += "(default) "
+    finally:
+        pvars[i] = pvars[i] % vars[i]
+def tb_print(*list):
+    try:
+        tb_print.width
+    except AttributeError:
+        tb_print.width = 40
+    print(" " * 18, "|{0:{width}}|".format(*list, width = tb_print.width), sep = "")
+tb_print.width = 39
+tb_print(chr(0x305) * tb_print.width)
+for line in pvars:
+    tb_print(line)
+tb_print("_" * tb_print.width)
+print()
+init, rate, term = vars
+finSimple = init * (1 + rate / 100 * term)
+finCom = init * (1 + rate / 100) ** term
+def fm_print(*tuple):
+    form = "%-20s%-18s%-18s"
+    print(form % tuple)
+fm_print("", "Простой процент", "Сложный процент")
+fm_print("Начальная сумма, ₽:", round(init, 1), round(init, 1))
+fm_print("Конечная сумма, ₽:", round(finSimple, 1), round(finCom, 1))
+incSimple = finSimple - init
+incCom = finCom - init
+fm_print("Доход, руб:", round(incSimple, 1), round(incCom, 1))
+def getYield(income):
+    return income / init * 1 / term * 100
+fm_print("Доходность, % год.:", round(getYield(incSimple), 1), round(getYield(incCom), 1))
 
