@@ -55,10 +55,10 @@
 
 
 
-def do_any():
-    print("yo")
-class do_some():
-    print("hei")
+#def do_any():
+#    print("yo")
+#class do_some():
+#    print("hei")
 
 #print(type(do_any))
 #a = do_any()
@@ -68,28 +68,37 @@ class do_some():
 
 
 
-# добавление нового поля к объекту 'function'
-def do_some(): 
-    try: 
-        do_some.a 
-    except (AttributeError): 
-        do_some.a = 50 
-    print(do_some.a) 
-    print(type(do_some))
-print(type(do_some()))
-do_some() 
-do_some.a = 30 
-do_some()
-print("___________")
+## добавление нового поля к объекту 'function'
+#def do_some(): 
+#    try: 
+#        do_some.a 
+#    except (AttributeError): 
+#        do_some.a = 50 
+#    print(do_some.a) 
+#    print(type(do_some))
+#print(type(do_some()))
+#do_some() 
+#do_some.a = 30 
+#do_some()
+#print("___________")
 
 
 # принципиально похоже на добавление нового поля к любому объекту
 class any_class:
     b = 100
+    __dict__["c"] = "abc"
+    if not 'b' in globals():
+        print("b нет в глобальных")
+    if not 'b' in locals():
+        print("b нет в локальных")
+    if not hasattr(do_some, "b"):
+        print("b нет в атрибутах")
+
 print(type(any_class))
 any = any_class()
 print(type(any))
 any.a = 50
+any.b = 1
 def do_some():
     print(any.a, any.b)
 print(type(do_some))
