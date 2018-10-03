@@ -13,13 +13,14 @@ init, rate, term = 10000, 15, 5
 print("\nНачальная сумма = %.2f рублей" % init)
 print("Процентная ставка = %.2f %% год" % rate)
 print("Срок инвестирования = %d лет" % term)
-col_w = 18  # ширина основных столбцов
-print(("{:<{}}" + "{:^{}}" * 2).format("", col_w/2, "Простой процент", col_w*2, "Сложный процент", col_w*2), end = "")
+print(("{:<{}}" + "{:^{}}" * 2).format("", 9, "Простой процент", 36, "Сложный процент", 36), end = "")
 def fm_print(*tuple):
-    col_width = [col_w/2, *[col_w] * 4]
-    print(col_width)
-    print(("{:>{}}" + "{:^{}}" * 4).format(*tuple))
-fm_print("", col_w/2, *(("Сумма, руб.", col_w, "Доход за год, руб.", col_w) * 2))
+    fm_print.col_w = 18 # ширина основных столбцов
+    col_width = [fm_print.col_w/2, *[fm_print.col_w] * 4]
+    z = [zip(col_width, tuple)]
+    print(z)
+    print(("{:>{}}" + "{:<{}}" * 4).format(zip(col_width, tuple)))
+fm_print("", *(("Сумма, руб.", "Доход за год, руб.") * 2))
 simple = complex = init
 for i in range(term):
     in_sim = simple

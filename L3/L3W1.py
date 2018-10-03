@@ -84,30 +84,70 @@
 
 
 # принципиально похоже на добавление нового поля к любому объекту
-class any_class:
-    b = 100
-    __dict__["c"] = "abc"
-    if not 'b' in globals():
-        print("b нет в глобальных")
-    if not 'b' in locals():
-        print("b нет в локальных")
-    if not hasattr(do_some, "b"):
-        print("b нет в атрибутах")
+#class any_class:
+#    b = 100
+#    __dict__["c"] = "abc"
+#    if not 'b' in globals():
+#        print("b нет в глобальных")
+#    if not 'b' in locals():
+#        print("b нет в локальных")
+#    if not hasattr(do_some, "b"):
+#        print("b нет в атрибутах")
 
-print(type(any_class))
-any = any_class()
-print(type(any))
-any.a = 50
-any.b = 1
-def do_some():
-    print(any.a, any.b)
-print(type(do_some))
-do_some()
-any.a = 30
-do_some()
+#print(type(any_class))
+#any = any_class()
+#print(type(any))
+#any.a = 50
+#any.b = 1
+#def do_some():
+#    print(any.a, any.b)
+#print(type(do_some))
+#do_some()
+#any.a = 30
+#do_some()
 
 
 # вызов функции == создание объекта класса 'function'?
 
 
-# проверка отправки в переименованный репозиторий
+
+## слияние списков с чередованием
+#la = ["a", "b", "c"]
+#lb = [1, 2, 3]
+## цель получить список ["a", 1, "b", 2, "c", 3]
+#res = []
+#for i, elem in enumerate(la):
+#    l = ([elem] + [lb[i]])
+#    l2 = [elem] + [lb[i]]
+#    print(l2 == l)
+#    print(l2 is l)
+#    print(l)
+#    for j in l:
+#        res.append(j)
+#print(res)
+
+#def createGenerator() :
+#    mylist = range(3)
+#    for i in mylist :
+#        yield i*i
+
+#mygenerator = createGenerator()
+#print(*mygenerator)
+
+
+# использование Python для переноса учебных проектов по ООП C++ из разных решений в одно
+# part 1. перенос папок проектов в общую папку решения
+import shutil
+import re
+import os
+base_dir = r'D:\Desktop\C++'
+dest_dir = r"D:\Desktop\C++\Lessons Cpp"
+names = os.listdir(base_dir)
+print(os.listdir(dest_dir))
+rex = re.compile(r"^L(1[7-9]|20)\.[0-9].*")
+for dir in names:
+    if rex.search(dir):
+        print(dir)
+        print(base_dir + "\\" + dir)
+        shutil.copytree(base_dir + "\\" + dir, dest_dir + "\\" + dir)
+# part 2. добавление проектов в решение
