@@ -116,7 +116,7 @@
 #lb = [1, 2, 3]
 ## цель получить список ["a", 1, "b", 2, "c", 3]
 #res = []
-#for i, elem in enumerate(la):
+#for i, elem in enumerate(la if la < lb lb):
 #    l = ([elem] + [lb[i]])
 #    l2 = [elem] + [lb[i]]
 #    print(l2 == l)
