@@ -137,17 +137,20 @@
 
 # использование Python для переноса учебных проектов по ООП C++ из разных решений в одно
 # part 1. перенос папок проектов в общую папку решения
-import shutil
-import re
-import os
-base_dir = r'D:\Desktop\C++'
-dest_dir = r"D:\Desktop\C++\Lessons Cpp"
-names = os.listdir(base_dir)
-print(os.listdir(dest_dir))
-rex = re.compile(r"^L(1[7-9]|20)\.[0-9].*")
-for dir in names:
-    if rex.search(dir):
-        print(dir)
-        print(base_dir + "\\" + dir)
-        shutil.copytree(base_dir + "\\" + dir, dest_dir + "\\" + dir)
+#import shutil
+#import re
+#import os
+#base_dir = r'D:\Desktop\C++'
+#dest_dir = r"D:\Desktop\C++\Lessons Cpp"
+#names = os.listdir(base_dir)
+#print(os.listdir(dest_dir))
+#rex = re.compile(r"^L(1[7-9]|20)\.[0-9].*")
+#for dir in names:
+#    if rex.search(dir):
+#        print(dir)
+#        print(base_dir + "\\" + dir)
+#        shutil.copytree(base_dir + "\\" + dir, dest_dir + "\\" + dir)
 # part 2. добавление проектов в решение
+# для этого сгенерируем строку с именами файлов, которую можно вставить в окне Добавление существующего проекта
+# добавление с помощью окна добавление нескольких элементов за раз невозможно
+# добавить проекты вручную в файл решения не получилось так как там присутствуют дескрипторы/хэш-суммы/т.п.
