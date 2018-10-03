@@ -20,14 +20,12 @@ while 1:
         print("Ошибка. Введите число")
     except Exception as ex:
         print(ex)
-print(getlocale())
 setlocale(LC_ALL, "ru")
 monthLen = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 month = datetime(1, monthNum, 1, 0, 0)
-print("\n", "\t" * 3, month.strftime("%B"), end = "")
+print("{:^50}".format(month.strftime("%B")), end = "")
 for i in range(0, monthLen[monthNum - 1] + firstWeekday - 1):
     if i % 7 == 0:
-        print("\n")
-    print(" ", end = "\t") if i + 1 < firstWeekday else print(i - firstWeekday + 2, end = "\t")
+        print()
+    print(" {: <6}".format("" if i + 1 < firstWeekday else i - firstWeekday + 2), end = "")
 print()
-

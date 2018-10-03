@@ -20,7 +20,6 @@ while 1:
         print(ex)
 from datetime import datetime
 from locale import *
-print(getlocale())
 setlocale(LC_ALL, "ru")
 monthLen = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 month = datetime(1, monthNum, 1, 0, 0)
