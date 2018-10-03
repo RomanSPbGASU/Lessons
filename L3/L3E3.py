@@ -1,18 +1,22 @@
-#itext = ("Введите начальную сумму, ₽ = ", "Введите размер ставки, % = ", "Введите срок инвестирования, лет = ")
-#t = (float, float, int)
-#var = []; i = 0
-#while i <= 2:
-#    try:
-#      var.append(t[i](input(itext[i])))
-#    except (ValueError):
-#        print("Ошибка. Некорректный ввод")
-#        continue
-#    else:
-#        i += 1
-init, rate, term = 10000, 15, 5
-print("\nНачальная сумма = %.2f рублей" % init)
-print("Процентная ставка = %.2f %% год" % rate)
-print("Срок инвестирования = %d лет" % term)
+from L3E1 import tb_print
+itext = ("Введите начальную сумму, ₽ = ", "Введите размер ставки, % = ", "Введите срок инвестирования, лет = ")
+t = (float, float, int)
+var = []; i = 0
+while i <= 2:
+    try:
+      var.append(t[i](input(itext[i])))
+    except (ValueError):
+        print("Ошибка. Некорректный ввод")
+        continue
+    else:
+        i += 1
+init, rate, term = var
+tb_print.width = 40
+tb_print(chr(0x305) * tb_print.width)
+tb_print(" Начальная сумма = %.2f рублей" % init)
+tb_print(" Процентная ставка = %.2f %% год" % rate)
+tb_print(" Срок инвестирования = %d лет" % term)
+tb_print("_" * tb_print.width)
 print(("{:<{}}" + "{:^{}}" * 2).format("", 9, "Простой процент", 20, "Сложный процент", 41))
 def fm_print(*tuple):
     fm_print.col_w = 19 # ширина основных столбцов

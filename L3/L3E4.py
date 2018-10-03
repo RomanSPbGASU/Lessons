@@ -1,3 +1,5 @@
+from datetime import datetime
+from locale import *
 while 1:
     try:
         monthNum = int(input("Введите номер месяца: "))
@@ -18,8 +20,6 @@ while 1:
         print("Ошибка. Введите число")
     except Exception as ex:
         print(ex)
-from datetime import datetime
-from locale import *
 print(getlocale())
 setlocale(LC_ALL, "ru")
 monthLen = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
