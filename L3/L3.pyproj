@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0a6066ba-dc82-4a74-9bde-35ea49e7a053</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>L3E5.py</StartupFile>
+    <StartupFile>L3E5.0.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -33,7 +33,10 @@
     <Compile Include="L3E4.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="L3E5.py">
+    <Compile Include="L3E5.0.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="L3E5.1.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="L3E6.py">
