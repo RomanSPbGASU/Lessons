@@ -1,5 +1,4 @@
 first = input("Введите первое слово: ")
 second = input("Введите второе слово: ")
-phrase = first + second
-print(phrase)
-print()
+print(first, second)
+print(second.upper(), first.upper())
