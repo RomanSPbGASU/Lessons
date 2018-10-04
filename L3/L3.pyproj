@@ -42,6 +42,9 @@
     <Compile Include="L3E6.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="L3E6.tests.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="L3E7.py">
       <SubType>Code</SubType>
     </Compile>
