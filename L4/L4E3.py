@@ -44,7 +44,7 @@ class GuessTheWord(object):
             print(ex.args[0] if type(ex) != ValueError else "Ошибка. Необходимо ввести число. ", 
                   "Значение по умолчанию: 5")
         self.mistakes = 0
-        self.mis_max = (32 - len(set(self.word))) * (10 - self.dif_level) / 10
+        self.mis_max = int((32 - len(set(self.word))) * (10 - self.dif_level) / 10)
 
     def choose_word(self, word):
         try:
