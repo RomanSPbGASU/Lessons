@@ -7,6 +7,6 @@ matrix = [[0.5,0,0,0,0],
 for line in matrix:
     print(line)
 print("Транспонированная матрица")
-for line in matrix:
-    
-
+transpoze = zip(*matrix)
+for line in transpoze:
+    print(line)
