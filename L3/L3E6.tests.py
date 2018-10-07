@@ -29,13 +29,21 @@ from L3E6 import ptrn
 
 
 class TestRegExp(unittest.TestCase):
+    file1 = open(r"D:\Desktop\Python\Lessons Python\L4\dates1.txt")
+    file2 = open(r"D:\Desktop\Python\Lessons Python\L4\dates2.txt")
+    for i in range(10):
+        print(file1.read())
+        print(file2.read())
+
     def test_date(self):
         # прогоним циклом все корректные даты (преобразованные в строку)
         file1 = open(r"D:\Desktop\Python\Lessons Python\L4\dates1.txt")
         file2 = open(r"D:\Desktop\Python\Lessons Python\L4\dates2.txt")
-        for i in enumerate(file1):
-            self.assertTrue(ptrn.search(file1.read()))
-            self.assertTrue(ptrn.search(file2.read()))
+        for line in range(file1):
+            self.assertTrue(ptrn.search(line.read()))
+
+        for line in range(file2):
+            self.assertTrue(ptrn.search(line.read()))
 
     def test_year(self):
         # true section
