@@ -6,44 +6,23 @@ from L3E6 import ptrn
 
 #start_date = d(1,1,1)
 #end_date = d(9999,12,31)
-#file1 = open(r"D:\Desktop\Python\Lessons Python\L4\dates1.txt", 'w')
-#file2 = open(r"D:\Desktop\Python\Lessons Python\L4\dates2.txt", 'w')
-#start = dt.now()
-#for single_date in (start_date + timedelta(n) for n in range(int((end_date - start_date).days))):
+#file1 = open(r"dates1.txt", 'w')
+#file2 = open(r"dates2.txt", 'w')
+#for single_date in (start_date + timedelta(n) for n in range(int((end_date -
+#start_date).days))):
 #    file1.write(single_date.strftime("%d/%m/%Y\n"))
 #    file2.write(single_date.strftime("%d.%m.%Y\n"))
-#duration = dt.now() - start
-#print(duration.seconds, ".%06d" % duration.microseconds, sep = "")
-
-
-#dates = [[single_date.strftime("%d/%m/%Y"), single_date.strftime("%d.%m.%Y")] for single_date in (start_date + timedelta(day)) for day in range(int((end_date - start_date).days))]
-#print(dates)
-
-#date = d(1, 1, 1)
-#date.toordinal()
-#print(date)
-#new_date = d(date.year, date.month, date.day + 100)
-#print(new_date)
-
-
-
 
 class TestRegExp(unittest.TestCase):
-    file1 = open(r"D:\Desktop\Python\Lessons Python\L4\dates1.txt")
-    file2 = open(r"D:\Desktop\Python\Lessons Python\L4\dates2.txt")
-    for i in range(10):
-        print(file1.read())
-        print(file2.read())
 
     def test_date(self):
         # прогоним циклом все корректные даты (преобразованные в строку)
-        file1 = open(r"D:\Desktop\Python\Lessons Python\L4\dates1.txt")
-        file2 = open(r"D:\Desktop\Python\Lessons Python\L4\dates2.txt")
-        for line in range(file1):
-            self.assertTrue(ptrn.search(line.read()))
-
-        for line in range(file2):
-            self.assertTrue(ptrn.search(line.read()))
+        with open(r"dates1.txt") as file1:
+            for line in file1:
+                self.assertTrue(ptrn.search(line.strip()), msg=line)
+        with open(r"dates2.txt") as file2:
+            for line in file2:
+                self.assertTrue(ptrn.search(line.strip()), msg=line)
 
     def test_year(self):
         # true section

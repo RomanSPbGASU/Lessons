@@ -36,8 +36,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="dates1.txt" />
-    <Content Include="dates2.txt" />
     <Content Include="word_rus.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
