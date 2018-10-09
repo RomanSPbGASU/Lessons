@@ -44,9 +44,14 @@ if __name__ == "__main__":
         2: print("Отсортированные множества\n", *(engineers.sorted()), *(programmers.sorted())),
         3: (print("элемент %s найден в списке '%s'" % ("не" if not engineers.find(input("Введите искомое значение: ")) else "", engineers.name)), 
             print("элемент %s найден в списке '%s'" % ("не" if not programmers.find(input("Введите искомое значение: ")) else "", programmers.name))),
-        4: val = input(),
+        4: (lambda x = input("Введите значение для добавления: "): (engineers.add(x), programmers.add(x)))(),
+        5: (lambda x = input("Введите значение для удаления: "): (engineers.discard(x), programmers.discard(x)))(),
+        6: engineers.find_insect(input("Введите значение для поиска: "), programmers),
+        7: engineers.del_duplicate(programmers),
+        8: engineers.difference(programmers)
         }
-    functions[int(input("\nВыберите операцию над множествами: "))]
+    while 1:
+        functions[int(input("\nВыберите операцию над множествами: "))]
 
 #выводить содержимое обоих списков на экран;
 # сортировать данные обоих списков;
