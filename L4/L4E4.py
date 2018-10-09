@@ -8,9 +8,11 @@ class Set(set):
         print(self.name, ": ", end = "")
         for elem in self:
             print(elem, end = " ")
+        print()
     def sort(self):
         """ Сортирует элементы множества и помещает их в список """
-        return [self].sort()
+        c = self.copy()
+        return list(c).sort()
     def find(self, elem):
         """ Ищет элемент во множестве """
         return elem in self
@@ -22,9 +24,9 @@ class Set(set):
         return elem in insect
     def del_duplicate(self, set):
         """ Удаляет содержащиеся в set элементы из множества """
-        insects = self.insection(set)
+        insects = self.intersection(set)
         for insect in insects:
-            self.disgard(insect)
+            set.discard(insect)
 
 engineers = Set("Инженеры", "Иванов", "Петров", "Сидоров", "Zuse")
 programmers = Set("Программисты", "Torvalds", "Knuth", "Stroustrup", "Zuse")
@@ -32,7 +34,7 @@ programmers = Set("Программисты", "Torvalds", "Knuth", "Stroustrup",
 if __name__ == "__main__":
     print("Доступные операции над множествами:\n")
     print("1. Вывести списки на экран")
-    print("2. Сортировать данные списков")
+    print("2. Показать сортированные данные списков")
     print("3. Поиск записи в каждом списке")
     print("4. Добавление записи в списки")
     print("5. Удаление записи из списков")
@@ -40,18 +42,25 @@ if __name__ == "__main__":
     print("7. Удаление из второго списка записей, содержащихся в обоих списках")
     print("8. Нахождение записей, имеющихся только в одном списке")
     functions = { 
-        1: (engineers.print(), programmers.print),
-        2: print("Отсортированные множества\n", *[engineers.sort()], *[programmers.sort()]),
-        3: (print("элемент %s найден в списке '%s'" % ("не" if not engineers.find(input("Введите искомое значение: ")) else "", engineers.name)), 
-            print("элемент %s найден в списке '%s'" % ("не" if not programmers.find(input("Введите искомое значение: ")) else "", programmers.name))),
-        4: (lambda x = input("Введите значение для добавления: "): (engineers.add(x), programmers.add(x)))(),
-        5: (lambda x = input("Введите значение для удаления: "): (engineers.discard(x), programmers.discard(x)))(),
-        6: engineers.find_insect(input("Введите значение для поиска: "), programmers),
-        7: engineers.del_duplicate(programmers),
-        8: engineers.difference(programmers)
+        1: lambda : (engineers.print(), programmers.print()),
+        2: lambda : print("Отсортированные множества: \n", *engineers.sort(), *programmers.sort()),
+        3: lambda x : (print("элемент %s найден в списке '%s'" % ("не" if not engineers.find(x) else "", engineers.name)), 
+            print("элемент %s найден в списке '%s'" % ("не" if not programmers.find(x) else "", programmers.name))),
+        4: lambda x : (engineers.add(x), programmers.add(x)),
+        5: lambda x : (engineers.discard(x), programmers.discard(x)),
+        6: lambda x : print("элемент %s найден в обоих списках" % ("не" if not engineers.find_insect(x, programmers) else "")),
+        7: lambda : engineers.del_duplicate(programmers),
+        8: lambda : print(*engineers.difference(programmers))
         }
     while 1:
-        functions[int(input("\nВыберите операцию над множествами: "))]
+        try:
+            f_num = int(input("\nВыберите операцию над множествами: "))
+        except:
+            break
+        if functions[f_num].__code__.co_argcount == 1:
+            functions[f_num](input("Введите значение: "))
+        else:
+            functions[f_num]()
 
 #выводить содержимое обоих списков на экран;
 # сортировать данные обоих списков;
