@@ -12,7 +12,9 @@ class Set(set):
     def sort(self):
         """ Сортирует элементы множества и помещает их в список """
         c = self.copy()
-        return list(c).sort()
+        c = list(c)
+        c.sort()
+        return c
     def find(self, elem):
         """ Ищет элемент во множестве """
         return elem in self
@@ -43,7 +45,7 @@ if __name__ == "__main__":
     print("8. Нахождение записей, имеющихся только в одном списке")
     functions = { 
         1: lambda : (engineers.print(), programmers.print()),
-        2: lambda : print("Отсортированные множества: \n", *engineers.sort(), *programmers.sort()),
+        2: lambda : print("Отсортированные множества: \n", *engineers.sort(), "\n", *programmers.sort()),
         3: lambda x : (print("элемент %s найден в списке '%s'" % ("не" if not engineers.find(x) else "", engineers.name)), 
             print("элемент %s найден в списке '%s'" % ("не" if not programmers.find(x) else "", programmers.name))),
         4: lambda x : (engineers.add(x), programmers.add(x)),
