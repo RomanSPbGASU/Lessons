@@ -8,9 +8,9 @@ class Set(set):
         print(self.name, ": ", end = "")
         for elem in self:
             print(elem, end = " ")
-    def sorted(self):
+    def sort(self):
         """ Сортирует элементы множества и помещает их в список """
-        return [self].sorted()
+        return [self].sort()
     def find(self, elem):
         """ Ищет элемент во множестве """
         return elem in self
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     print("8. Нахождение записей, имеющихся только в одном списке")
     functions = { 
         1: (engineers.print(), programmers.print),
-        2: print("Отсортированные множества\n", *(engineers.sorted()), *(programmers.sorted())),
+        2: print("Отсортированные множества\n", *[engineers.sort()], *[programmers.sort()]),
         3: (print("элемент %s найден в списке '%s'" % ("не" if not engineers.find(input("Введите искомое значение: ")) else "", engineers.name)), 
             print("элемент %s найден в списке '%s'" % ("не" if not programmers.find(input("Введите искомое значение: ")) else "", programmers.name))),
         4: (lambda x = input("Введите значение для добавления: "): (engineers.add(x), programmers.add(x)))(),
