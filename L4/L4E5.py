@@ -33,10 +33,10 @@ if __name__ == "__main__":
     print()
 
     func = {
-        1: (find_tel(input("Введите имя сотрудника: ")),
-        2: (get_info(input("Введите имя сотрудника: ")),
-        3: (get_unit_tels(input("Введите название подразделения: ")),
-        4: (get_pos_info(input("Введите название должности: "))
+        1: (find_tel, "Введите имя сотрудника: "),
+        2: (get_info, "Введите имя сотрудника: "),
+        3: (get_unit_tels, "Введите название подразделения: "),
+        4: (get_pos_info, "Введите название должности: ")
         }
 
     while 1:
@@ -48,6 +48,8 @@ if __name__ == "__main__":
             print("Выбрано недопустимое действие")
             print("Необходимо ввести число от 1 до 4")
             continue
-        print(*func[f_num](input()))
+        f, text in func[f_num]
+        print(f(input(text))
+        #f(input(text) for f, text in func[f_num]
 
         # TODO: Изменить настройки, чтобы при нажатии F5 запускался активный файл
