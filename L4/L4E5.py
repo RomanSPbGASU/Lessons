@@ -1,28 +1,44 @@
 from re import compile, search
+
+
+positions = ("инженер", "начальник отдела", "менеджер", "программист")
+units = ("отдел автоматизации", "отдел маркетинга")
+employees = {"Иванов И. И.":(positions[0], units[1], 123), "Петров П. П.":(positions[2], units[0], 987), "Кузнецов К. К":(positions[3], units[0], 456), "Семёнов А. А":(positions[1], units[0], 789), "Волков А. Е":(positions[3], units[1], 321), "Путин В. В":(positions[1], units[1], 654)}
+
 def find_tel(name):
     """ Предоставляет номер телефона сотрудника """
-    for employee, data in employees.items:
-        if find_like(name):
-            return data[2]
-    pass
+    for employee, data in employees.items():
+        if find_like(name, employee):
+            return "Телефон: " + str(data[2])
+
 def get_info(name):
     """ Предоставляет информацию о сотруднике """
-    pass
+    for employee, data in employees.items():
+        if find_like(name, employee):
+            return ["Должность: " + str(data[0]), "Подразделение: " + str(data[1]), "Телефон: " + str(data[2])]
+
 def get_unit_tels(unit_name):
     """ Предоставляет номера сотрудников конкретного отдела """
-    pass
+    book = {}
+    for employee, data in employees.items():
+        if find_like(unit_name, data[1]):
+            book.update({"Сотрудник: " + str(employee): "Телефон: " + str(data[2])})
+    return book
+
 def get_pos_info(position_name):
     """ Предоставляет информацию о сотрудниках, занимающих определённую должность """
-    pass
+    book = {}
+    for employee, data in employees.items():
+        if find_like(position_name, data[0]):
+            book.update({"Сотрудник: " + str(employee): ["Подразделение: " + str(data[1]),"Телефон: " + str(data[2])]})
+    return book
+
 def find_like(exp, string):
     """ Ищет выражение в строке """
-    ptrn = ".*" + str(exp) + ".*"
+    ptrn = compile(".*" + str(exp) + ".*")
     return ptrn.search(string)
 
 if __name__ == "__main__":
-    positions = ("инженер", "начальник отдела", "менеджер", "программист")
-    units = ("отдел автоматизации", "отдел маркетинга")
-    employees = {"Иванов И. И.":(positions[0], units[1], 123), "Петров П. П.":(positions[2], units[0], 987), "Кузнецов К. К":(positions[3], units[0], 456), "Семёнов А. А":(positions[1], units[0], 789), "Волков А. Е":(positions[3], units[1], 321), "Путин В. В":(positions[1], units[1], 654)}
 
     print("{:^80}".format("Поиск по базе сотрудников"))
     print()
@@ -48,8 +64,5 @@ if __name__ == "__main__":
             print("Выбрано недопустимое действие")
             print("Необходимо ввести число от 1 до 4")
             continue
-        f, text in func[f_num]
-        print(f(input(text))
-        #f(input(text) for f, text in func[f_num]
-
-        # TODO: Изменить настройки, чтобы при нажатии F5 запускался активный файл
+        f, text = func[f_num]
+        print(f(input(text)))
