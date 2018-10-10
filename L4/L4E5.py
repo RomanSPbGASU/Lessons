@@ -1,5 +1,9 @@
+from re import compile, search
 def find_tel(name):
     """ Предоставляет номер телефона сотрудника """
+    for employee, data in employees.items:
+        if find_like(name):
+            return data[2]
     pass
 def get_info(name):
     """ Предоставляет информацию о сотруднике """
@@ -10,6 +14,10 @@ def get_unit_tels(unit_name):
 def get_pos_info(position_name):
     """ Предоставляет информацию о сотрудниках, занимающих определённую должность """
     pass
+def find_like(exp, string):
+    """ Ищет выражение в строке """
+    ptrn = ".*" + str(exp) + ".*"
+    return ptrn.search(string)
 
 if __name__ == "__main__":
     positions = ("инженер", "начальник отдела", "менеджер", "программист")
@@ -25,16 +33,16 @@ if __name__ == "__main__":
     print()
 
     func = {
-        1: ("Введите имя сотрудника: ", find_tel),
-        2: ("Введите имя сотрудника: ", get_info),
-        3: ("Введите название подразделения: ", get_unit_tels),
-        4: ("Введите название должности: ", get_pos_info)
+        1: (find_tel(input("Введите имя сотрудника: ")),
+        2: (get_info(input("Введите имя сотрудника: ")),
+        3: (get_unit_tels(input("Введите название подразделения: ")),
+        4: (get_pos_info(input("Введите название должности: "))
         }
 
     while 1:
         try: 
             f_num = int(input("Выберите необходимое действие: "))
-            if func < 1 or func > 4:
+            if f_num < 1 or f_num > 4:
                 raise ValueError
         except ValueError as ve:
             print("Выбрано недопустимое действие")
