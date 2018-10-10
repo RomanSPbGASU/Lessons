@@ -1,4 +1,4 @@
-from re import compile, search
+from re import *
 
 
 positions = ("инженер", "начальник отдела", "менеджер", "программист")
@@ -27,15 +27,15 @@ def get_unit_tels(unit_name):
 
 def get_pos_info(position_name):
     """ Предоставляет информацию о сотрудниках, занимающих определённую должность """
-    book = {}
+    book = []
     for employee, data in employees.items():
         if find_like(position_name, data[0]):
-            book.update({"Сотрудник: " + str(employee): ["Подразделение: " + str(data[1]),"Телефон: " + str(data[2])]})
+            book.append(["Сотрудник: " + str(employee), "Подразделение: " + str(data[1]), "Телефон: " + str(data[2])])
     return book
 
 def find_like(exp, string):
     """ Ищет выражение в строке """
-    ptrn = compile(".*" + str(exp) + ".*")
+    ptrn = compile(".*" + str(exp) + ".*", IGNORECASE)
     return ptrn.search(string)
 
 if __name__ == "__main__":
@@ -65,4 +65,16 @@ if __name__ == "__main__":
             print("Необходимо ввести число от 1 до 4")
             continue
         f, text = func[f_num]
-        print(f(input(text)))
+        ans = f(input(text))
+        if ans:
+            if type(ans) != str:
+                for item in ans:
+                    if type(item) != str:
+                        for elem in item:
+                            print(elem)
+                    else:
+                       print(item)
+            else:
+                print(ans)
+        else:
+            print("Ничего не найдено")
