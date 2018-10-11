@@ -11,6 +11,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "L3", "L3\L3.pyproj", "{0A60
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "L4", "L4\L4.pyproj", "{B7965934-EF1B-4416-8525-86480F8D26E4}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Course Work", "Course Work\Course Work.pyproj", "{68E674D8-A954-403E-9714-C77E90A4F514}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,12 @@ Global
 		{B7965934-EF1B-4416-8525-86480F8D26E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7965934-EF1B-4416-8525-86480F8D26E4}.Release|x64.ActiveCfg = Release|Any CPU
 		{B7965934-EF1B-4416-8525-86480F8D26E4}.Release|x86.ActiveCfg = Release|Any CPU
+		{68E674D8-A954-403E-9714-C77E90A4F514}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68E674D8-A954-403E-9714-C77E90A4F514}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{68E674D8-A954-403E-9714-C77E90A4F514}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{68E674D8-A954-403E-9714-C77E90A4F514}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68E674D8-A954-403E-9714-C77E90A4F514}.Release|x64.ActiveCfg = Release|Any CPU
+		{68E674D8-A954-403E-9714-C77E90A4F514}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
