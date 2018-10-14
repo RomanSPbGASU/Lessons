@@ -1,4 +1,4 @@
-##TODO: связи Хэбба - попробовать реализовать алгоритм
+# TODO: связи Хэбба - попробовать реализовать алгоритм
 #import random
 
 
@@ -15,8 +15,7 @@
 #for i in range(5):
 #    for j in range(5):
 #        strenghts[i * 5 + j] += ETA * ipt[i * 5 + j] * opt
-
-import sys
+from PIL import Image, ImageDraw
 
 
 class Neuron:
@@ -32,24 +31,27 @@ class Neuron:
         return str(self.__name)
 
     def __str__(self):
-        return str("Нейрон")
+        return str("Нейрон: " + self.__name)
 
-    def save(self, directory):
-        file = open(self.__name, "wb")
-        for byte in self.__memory:
-            file.write(byte)
+    def save(self, directory = ""):
+        """ Сохранение нейрона на диск """
+        save_dir = directory + "/" if directory[-1:] in "/\\" else ""
+        save_dir += self.__name
+        with open(self.__name, "wb") as file:
+            for b in self.__memory:
+                file.write(b)
 
     def read_data(self, filename):
         file = open(filename)
         for byte in file:
             self.__memory += byte
 
-    def to_png(self):
-        signature = b"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A"
-        ihdr = b"\x00\x00\x00\x0D\x49\x48\x44\x52\x00\x00\x00\x1E\x00\x00\x00\x1E\x08\x02\x00\x00\x00\xFC\x18\xED\xA3"
-        idat = b""
-        iend = b"\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82"
-
+    def save_png(self, directory):
+        image = Image.open("temp.jpg")
+        draw = ImageDraw.Draw(image)
+        width = image.size[0]
+        height = image.size[1]
+        pix = image.load()
 
 if __name__ == "__main__":
 
@@ -58,10 +60,19 @@ if __name__ == "__main__":
     #    neurons.append(Neuron("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"[i]))
     #print(neurons)
 
-    #file = open("K_letter.png", "rb")
+    #file = open("K_letter", "rb")
     #letter = file.read()
     #print(letter)
 
+    with open("K_letter.bmp", "rb") as file:
+        data = bytearray(file.read())
+    for b in data:
+        print(((("{0:0<2s} " * 8) + "\t") * 2 + "\n").format(hex(b)[2:]), sep="")
+
+
+
     neuron = Neuron("Example")
+    print(neuron)
+    neuron.save_png("D:/Desktop/Python/Lessons-Python/Course Work/")
     neuron.save("D:/Desktop/Python/Lessons Python/Course Work/")
 
