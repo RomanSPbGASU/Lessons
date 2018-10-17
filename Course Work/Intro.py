@@ -1,8 +1,6 @@
 from PIL import Image, ImageDraw, BmpImagePlugin as BIP
 import tkinter as tk
 import tkinter.filedialog as fd
-import tkinter.messagebox as mb
-
 
 class Neuron:
     def __init__(self, name, *in_arr):
@@ -42,16 +40,46 @@ class Neuron:
 
 class GUI(tk.Tk):
     def __init__(self):
-        self = tk.Tk()
+        super().__init__()
         self.title("Распознование символов на Python")
         self.geometry("500x250+200+300")
+        self.choose_file_btn = tk.Button(self,
+                                         text="Выбрать",
+                                         background="#555",
+                                         foreground="#ccc",
+                                         padx="10",
+                                         pady="4",
+                                         font="14",
+                                         command=self._show_file_dialog)
+        self.choose_file_btn.pack()
+        self.recognition_btn = tk.Button(self,
+                                         text="Распознать",
+                                         background="#c55",
+                                         foreground="#ccc")
+        self.recognition_btn.pack()
+        self.filename = tk.StringVar(master=self, value="F_letter.bmp")
+        file_entry = tk.Entry(master=self, textvariable=self.filename)
+        file_entry.place(relx=.2, rely=.1, anchor="c")
+        self.count = tk.IntVar(master=self, value=1)
+        count_entry = tk.Entry(master=self, textvariable=self.count)
+        count_entry.place(relx=.2, rely=.3, anchor="c")
+        self.recognized_text = tk.StringVar()
+        self.recognized_entry = tk.Entry(master=self,
+                                         textvariable=self.recognized_text)
+        self.recognized_entry.pack()
+        self.mainloop()
 
-    def show_file_dialog(self):
-        path = fd.askopenfilename(initialdir="",
-                                  title="Выберите файл для распознавания",
-                                  filetypes=(("BMP image files (*.bmp)", "*.bmp"),
-                                             ("", "")))
-        self.filename = path.split(sep="/")[-1]
+    def _show_file_dialog(self):
+        ask_file = fd.askopenfilename
+        self.path = ask_file(initialdir="",
+                             title="Выберите файл для распознавания",
+                             filetypes=(
+                                 ("BMP image files (*.bmp)", "*.bmp"),
+                                 ("", "")))
+        self.filename.set(self.path.split(sep="/")[-1])
+
+    def recognise_text(self):
+        ...
 
 
 if __name__ == "__main__":
@@ -64,23 +92,7 @@ if __name__ == "__main__":
     # letter = file.read()
     # print(letter)
 
-    root = tk.Tk()
-    root.title("Распознование символов на Python")
-    root.geometry("500x250+200+300")
-    root.show_file_dialog = show_file_dialog
-    root.choose_file = tk.Button(root,
-                                 text="Выбрать",
-                                 background="#555",
-                                 foreground="#ccc",
-                                 padx="10",
-                                 pady="4",
-                                 font="14",
-                                 command=root.show_file_dialog)
-    root.choose_file.pack()
-    filename = tk.StringVar()
-    file_entry = tk.Entry(textvariable=file_name)
-    file_entry.place()
-    root.mainloop()
+    interface = GUI()
 
     neuron = BIP.BmpImageFile()
 
