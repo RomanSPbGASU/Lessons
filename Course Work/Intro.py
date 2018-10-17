@@ -20,23 +20,35 @@ class Neuron:
     def save(self, directory=""):
         with open(self.__get_save_path(directory, ".mem"), "wb") as file:
             file.write(bytearray(self.__memory))
+            print(bytearray(self.__memory))
 
     def read(self, directory):
         with open(directory, "rb") as file:
             self.__memory = list(file.read())
+            print(self.__memory)
 
     def read_ptrn(self, filename):
+        """ Считывает шаблон (коэффициенты нейронов), представленный в виде
+        .bmp файла """
         file = Image.open(filename)
         self.__memory = list(file.convert("L").getdata())
 
-    def __get_save_path(self, dir, fix):
-        return (dir + "/" if dir[-1:] in "/\\" else "") + self.__name + fix
+    def __get_save_path(self, path, fix):
+        # TODO: посмотреть как изменить цвет заголовка свёрнутого фрагмента на более нейтральный
+        # TODO: посмотреть как делать многострочные блоки TODO
+        """ Возвращает путь для сохранения Нейрона, включая его имя
+
+        path: директория для сохранения
+        fix: обозначение формата файла, например: .jpg, .txt
+        """
+        return (path + "/" if path[-1:] in "/\\" else "") + self.__name + fix
 
     def save_ptrn(self, directory):
+        """ Сохраняет шаблон (коэффициенты нейронов) в .bmp файле"""
         file = Image.new("L", (30, 30))
         file.putdata(self.__memory)
-        print(self.__get_save_path(directory))
-        file.save(self.__get_save_path(directory))
+        print(self.__get_save_path(directory, ".bmp"))
+        file.save(self.__get_save_path(directory, ".bmp"))
 
 
 class GUI(tk.Tk):
@@ -99,40 +111,13 @@ if __name__ == "__main__":
     #
     # b = str(a)
     # print(b)
-    s = 'автомат'
-    s = s.strip("а")
-    print(s)
-    help(str)
-    def help():
-        print("На помощь!")
-    help(str)
-    t = {[1, 2, 3]: "Привет"}
-    print(t)
-    s = 'автомат'
 
-    s.strip("а")
-    print(s)
-    a = 10
-
-    b = 5
-
-    a = a ^ b
-    print(a)
-    a = 10
-    b = "ghbd"
-    c = a + b
-    print(c)
-    var = 50 / 25
-    print(var)
-    a = b = [10, 20, 30, 40, 50]
-    a[2] = 100
-    print(b)
-    var = input("Введите три числа (через пробел):")
-    print(var)
-    a = 10; b = 0; c = a - b
     neuron = Neuron("Example")
-    neuron.read_ptrn("D:\Desktop\Python\Lessons Python\Course Work\K_letter.bmp")
+    neuron.read_ptrn("D:\Desktop\Python\Lessons Python\Course "
+                     "Work\K_letter.bmp")
     neuron.save_ptrn("")
+    neuron.save("")
+    neuron.read("Example.bmp")
 
     neuron = BIP.BmpImageFile()
 
