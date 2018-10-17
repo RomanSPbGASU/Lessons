@@ -117,17 +117,14 @@ if __name__ == "__main__":
     # print(letter)
 
     # interface = GUI()
-    # a = {1 : "A", 2: 1, 3: None}
-    #
-    # b = str(a)
-    # print(b)
 
     neuron = Neuron("Example")
     neuron.read_ptrn("D:\Desktop\Python\Lessons Python\Course "
                      "Work\K_letter.bmp")
-    neuron.save_ptrn("")
-    neuron.save("")
+    neuron.save_ptrn("D:\Desktop\Python\Lessons Python\Course Work")
+    neuron.save("D:\Desktop\Python\Lessons Python\Course Work")
     neuron.read("Example.bmp")
+
 
     neuron = BIP.BmpImageFile()
 
