@@ -2,10 +2,11 @@ from PIL import Image, ImageDraw, BmpImagePlugin as BIP
 import tkinter as tk
 import tkinter.filedialog as fd
 
+
 class Neuron:
-    def __init__(self, name, *in_arr):
-        # if len(in_arr) != 900:
-        #    raise valueerror("входной массив должен содержать 30x30 элементов")
+    def __init__(self, name, in_arr=tuple([0] * 900)):
+        if len(in_arr) != 900:
+            raise ValueError("входной массив должен содержать 30x30 элементов")
         self.__name = str(name)
         self.__in_arr = bytearray(in_arr)
         self.__memory = bytearray()
@@ -25,20 +26,21 @@ class Neuron:
             for b in self.__memory:
                 file.write(b)
 
-    def read_data(self, filename):
-        file = open(filename)
-        for byte in file:
-            self.__memory += byte
+    def read_ptrn(self, filename):
+        file = Image.open(filename)
+        for pixel in file.getdata():
+            print(pixel)
 
-    def save_png(self, directory):
-        image = Image.open("temp.jpg")
-        draw = ImageDraw.Draw(image)
-        width = image.size[0]
-        height = image.size[1]
-        pix = image.load()
+    def __get_save_path(self, dir):
+        return (dir + "/" if dir[-1:] in "/\\" else "") + self.__name
+
+    def save_ptrn(self, directory):
+        file = Image.new("L", (30, 30))
+        print(file.size)
 
 
 class GUI(tk.Tk):
+
     def __init__(self):
         super().__init__()
         self.title("Распознование символов на Python")
@@ -92,7 +94,11 @@ if __name__ == "__main__":
     # letter = file.read()
     # print(letter)
 
-    interface = GUI()
+    # interface = GUI()
+
+    neuron = Neuron("Example")
+    neuron.read_ptrn("D:\Desktop\Python\Lessons Python\Course Work\K_letter.bmp")
+    neuron.save_ptrn("")
 
     neuron = BIP.BmpImageFile()
 
