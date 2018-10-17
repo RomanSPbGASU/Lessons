@@ -18,22 +18,25 @@ class Neuron:
         return str("Нейрон: " + self.__name)
 
     def save(self, directory=""):
-        save_dir = directory + "/" if directory[-1:] in "/\\" else ""
-        save_dir += self.__name
-        with open(self.__name, "wb") as file:
-            for b in self.__memory:
-                file.write(b)
+        with open(self.__get_save_path(directory, ".mem"), "wb") as file:
+            file.write(bytearray(self.__memory))
+
+    def read(self, directory):
+        with open(directory, "rb") as file:
+            self.__memory = list(file.read())
 
     def read_ptrn(self, filename):
         file = Image.open(filename)
         self.__memory = list(file.convert("L").getdata())
 
-    def __get_save_path(self, dir):
-        return (dir + "/" if dir[-1:] in "/\\" else "") + self.__name
+    def __get_save_path(self, dir, fix):
+        return (dir + "/" if dir[-1:] in "/\\" else "") + self.__name + fix
 
     def save_ptrn(self, directory):
         file = Image.new("L", (30, 30))
         file.putdata(self.__memory)
+        print(self.__get_save_path(directory))
+        file.save(self.__get_save_path(directory))
 
 
 class GUI(tk.Tk):
@@ -92,7 +95,41 @@ if __name__ == "__main__":
     # print(letter)
 
     # interface = GUI()
+    # a = {1 : "A", 2: 1, 3: None}
+    #
+    # b = str(a)
+    # print(b)
+    s = 'автомат'
+    s = s.strip("а")
+    print(s)
+    help(str)
+    def help():
+        print("На помощь!")
+    help(str)
+    t = {[1, 2, 3]: "Привет"}
+    print(t)
+    s = 'автомат'
 
+    s.strip("а")
+    print(s)
+    a = 10
+
+    b = 5
+
+    a = a ^ b
+    print(a)
+    a = 10
+    b = "ghbd"
+    c = a + b
+    print(c)
+    var = 50 / 25
+    print(var)
+    a = b = [10, 20, 30, 40, 50]
+    a[2] = 100
+    print(b)
+    var = input("Введите три числа (через пробел):")
+    print(var)
+    a = 10; b = 0; c = a - b
     neuron = Neuron("Example")
     neuron.read_ptrn("D:\Desktop\Python\Lessons Python\Course Work\K_letter.bmp")
     neuron.save_ptrn("")
