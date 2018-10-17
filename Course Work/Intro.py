@@ -8,9 +8,8 @@ class Neuron:
         if len(in_arr) != 900:
             raise ValueError("входной массив должен содержать 30x30 элементов")
         self.__name = str(name)
-        self.__in_arr = bytearray(in_arr)
-        self.__memory = bytearray()
-        self.__out_arr = bytearray()
+        self.__in_arr = in_arr
+        self.__memory = []
 
     def __repr__(self):
         return str(self.__name)
@@ -19,7 +18,6 @@ class Neuron:
         return str("Нейрон: " + self.__name)
 
     def save(self, directory=""):
-        """ Сохранение нейрона на диск """
         save_dir = directory + "/" if directory[-1:] in "/\\" else ""
         save_dir += self.__name
         with open(self.__name, "wb") as file:
@@ -28,15 +26,14 @@ class Neuron:
 
     def read_ptrn(self, filename):
         file = Image.open(filename)
-        for pixel in file.getdata():
-            print(pixel)
+        self.__memory = list(file.convert("L").getdata())
 
     def __get_save_path(self, dir):
         return (dir + "/" if dir[-1:] in "/\\" else "") + self.__name
 
     def save_ptrn(self, directory):
         file = Image.new("L", (30, 30))
-        print(file.size)
+        file.putdata(self.__memory)
 
 
 class GUI(tk.Tk):
