@@ -106,25 +106,49 @@ class GUI(tk.Tk):
         ...
 
 
+class NeuroNet:
+    def __init__(self, name="NeuroNet"):
+        self.name = name
+        self.big = []
+        for letter in range(0x41, 0x5A):
+            self.big.append(Neuron(chr(letter)))
+        self.small = []
+        for letter in range(0x61, 0x7A):
+            self.small.append(Neuron(chr(letter)))
+
+    def input(self, in_arr):
+        """ Принимает список из 30x30 значений цветов пикселей (0..255)
+
+        in_arr: входной список (должен быть одномерным)
+        """
+        for neuron in self.big:
+            ...
+        for neuron in self.small:
+            ...
+
+
+class Cuter:
+    """ Класс, предназначенный для разделения графического фрагмента текста
+    на отдельные буквы """
+    def __init__(self, filename):
+        self.image = Image.open(filename)
+        self.l_count = 1
+
+    @property
+    def l_count(self):
+        return self.l_count
+
+    @l_count.setter
+    def l_count(self, count):
+        self.l_count = count
+
+
+
+
 if __name__ == "__main__":
-    # neurons = []
-    # for i in range(33):
-    #    neurons.append(Neuron("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"[i]))
-    # print(neurons)
-
-    # file = open("K_letter", "rb")
-    # letter = file.read()
-    # print(letter)
-
-    # interface = GUI()
-
-    neuron = Neuron("Example")
-    neuron.read_ptrn("D:\Desktop\Python\Lessons Python\Course "
-                     "Work\K_letter.bmp")
-    neuron.save_ptrn("D:\Desktop\Python\Lessons Python\Course Work")
-    neuron.save("D:\Desktop\Python\Lessons Python\Course Work")
-    neuron.read("Example.bmp")
-
+    nn = NeuroNet()
+    inter = GUI()
+    nn.input()
 
     neuron = BIP.BmpImageFile()
 
