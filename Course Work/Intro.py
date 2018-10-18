@@ -130,12 +130,14 @@ class NeuroNet:
 class Cuter:
     """ Класс, предназначенный для разделения графического фрагмента текста
     на отдельные буквы """
+
     def __init__(self, filename):
         self.image = Image.open(filename)
         self.l_count = 1
 
     @property
     def l_count(self):
+        # TODO: узнать как документировать декорируемые свойства
         return self.l_count
 
     @l_count.setter
@@ -143,12 +145,10 @@ class Cuter:
         self.l_count = count
 
 
-
-
 if __name__ == "__main__":
     nn = NeuroNet()
     inter = GUI()
-    nn.input()
+    nn.input(...)
 
     neuron = BIP.BmpImageFile()
 
