@@ -39,8 +39,6 @@ class Neuron:
         self.__memory = list(file.convert("L").getdata())
 
     def __get_save_path(self, path, fix):
-        # TODO: посмотреть как изменить цвет заголовка свёрнутого фрагмента на более нейтральный
-        # TODO: посмотреть как делать многострочные блоки TODO
         """ Возвращает путь для сохранения Нейрона, включая его имя
 
         path: директория для сохранения
@@ -127,25 +125,48 @@ class NeuroNet:
             ...
 
 
-class Cuter:
+class Cutter:
     """ Класс, предназначенный для разделения графического фрагмента текста
     на отдельные буквы """
+    # TODO: Придумать алгоритм определения принадлежности нескольоких
+    # областей к одной букве. Возможно по среднему размеру символов (
+    # подойдёт только для букв) или по направлению строки. Как, например
+    # распознать букву Ы? Возможно, если достоверно известно что она
+    # является частью слова (последовательности букв, без цифр) - это можно
+    # будет сделать, в связи с тем что "палочка" от буквы "Ы" не похожа ни
+    # на одну букву.
 
     def __init__(self, filename):
         self.image = Image.open(filename)
         self.l_count = 1
+        self.binary = None
 
-    @property
-    def l_count(self):
-        # TODO: узнать как документировать декорируемые свойства
-        return self.l_count
+    def _binarize(self) -> Image.Image:
+        """ Преобразует исходное изображение в бинарное (с инверсией)"""
+        sb = self.image.convert(mode="1")
+        for i in range(30):
+            for j in range(30):
+                point = (i, j)
+                sb.putpixel(point, int(not sb.getpixel(point)))
+        self.binary = sb
+        return sb
 
-    @l_count.setter
-    def l_count(self, count):
-        self.l_count = count
+    def cut(self) -> []:
+        """ Возвращает связные области бинарного изображения"""
+        sb = self._binarize()
+        width = sb.size[0]
+        height = sb.size[1]
+        # TODO: разобрать метод point()
+        # TODO: разобрать что такое "lookup table"
+        for i in range(height):
+            for j in range(width):
+                point = (i, j)
+                print(self.image.getpixel(point))
 
 
 if __name__ == "__main__":
+    c = Cutter("Example.bmp")
+    c.cut()
     nn = NeuroNet()
     inter = GUI()
     nn.input(...)
