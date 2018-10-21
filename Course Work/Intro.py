@@ -4,8 +4,8 @@ import tkinter.filedialog as fd
 
 
 class Neuron:
-    def __init__(self, name, in_arr=tuple([0] * 900)):
-        if len(in_arr) != 900:
+    def __init__(self, name, in_arr=tuple([0] * 1024)):
+        if len(in_arr) != 1024:
             raise ValueError("входной массив должен содержать 30x30 элементов")
         self.__name = str(name)
         self.__in_arr = in_arr
@@ -38,7 +38,7 @@ class Neuron:
         file = Image.open(filename)
         self.__memory = list(file.convert("L").getdata())
 
-    def __get_save_path(self, path, fix):
+    def __get_save_path(self, path, fix) -> str:
         """ Возвращает путь для сохранения Нейрона, включая его имя
 
         path: директория для сохранения
@@ -53,7 +53,7 @@ class Neuron:
         результатов обучения. Для сохранения с целью последующего
         использования в программе рекомендуется использовать метод save().
         """
-        file = Image.new("L", (30, 30))
+        file = Image.new("L", (32, 32))
         file.putdata(self.__memory)
         print(self.__get_save_path(directory, ".bmp"))
         file.save(self.__get_save_path(directory, ".bmp"))
@@ -119,6 +119,8 @@ class NeuroNet:
 
         in_arr: входной список (должен быть одномерным)
         """
+        # TODO: подумать на чём лучше обучать на контурных изображениях или
+        # на залитых
         for neuron in self.big:
             ...
         for neuron in self.small:
@@ -140,12 +142,13 @@ class Cutter:
         self.image = Image.open(filename)
         self.l_count = 1
         self.binary = None
+        self.marked = None
 
     def _binarize(self) -> Image.Image:
         """ Преобразует исходное изображение в бинарное (с инверсией)"""
         sb = self.image.convert(mode="1")
-        for i in range(30):
-            for j in range(30):
+        for i in range(32):
+            for j in range(32):
                 point = (i, j)
                 sb.putpixel(point, int(not sb.getpixel(point)))
         self.binary = sb
@@ -153,15 +156,57 @@ class Cutter:
 
     def cut(self) -> []:
         """ Возвращает связные области бинарного изображения"""
+        class Contour:
+            def __init__(self, img: Image.Image, map: Image.Image, start: ImageDraw.ImageDraw.point):
+                self.SourceImage = None
+                self.CurrentImageMap = None
+            def __passDownLeft(self, p, InvertedAxis):
+                while self.SourceImage.isInside(p):
+                    self.__commitPoint(p)
+                    p = self.__movePoint(p, 0, 1, InvertedAxis)
+                    left = self.__movePoint(p, -1, 0, InvertedAxis)
+                    if self.SourceImage.isFilled(left):
+                        p = self.__commitPoint(left)
+                        while self.SourceImage.isInside(p):
+                            left = self.__movePoint(p, -1, 0, InvertedAxis)
+                            if not self.SourceImage.isFilled(left):
+                                break
+                            p = self.__commitPoint(left)
+                            up = self.__movePoint(p, 0, -1, InvertedAxis)
+                            if self.SourceImage.isFilled(up):
+                                return
+                    else:
+                        while self.SourceImage.isInside(p) and not self.SourceImage.isFilled(p):
+                            right = self.__movePoint(p, 1, 0, InvertedAxis)
+                            rightUp = self.__movePoint(right, 0, -1, InvertedAxis)
+                            if not self.SourceImage.isFilled(rightUp):
+                                return
+                            self.__commitPoint(rightUp)
+                            p = self.__commitPoint(right)
+
+
+            def __movePoint(self, src, x, y, InvertedAxis):
+                p = src
+                if InvertedAxis:
+                    x = -x
+                    y = -y
+                p.X += x
+                p.Y += y
+                return p
+
+            def __commitPoint(self, p):
+                if (not self.CurrentImageMap.isAssigned(p)) and self.SourceImage.isFilled(p):
+                    self.CurrentImageMap.assignSegment(self, p)
+                    push_back(p)
+                return p
         sb = self._binarize()
         width = sb.size[0]
         height = sb.size[1]
-        # TODO: разобрать метод point()
-        # TODO: разобрать что такое "lookup table"
+        # TODO: разобрать как в Python явно задавать область видимости
         for i in range(height):
             for j in range(width):
                 point = (i, j)
-                print(self.image.getpixel(point))
+                print(sb.getpixel(point))
 
 
 if __name__ == "__main__":
