@@ -1,16 +1,20 @@
 indict = {"initial": None, "final": None, "term": None}
-funcinlist = [lambda : float(input("Введите начальную сумму, ₽ = ")),
-              lambda : float(input("Введите конечную сумму, ₽ = ")),
-              lambda : int(input("Введите срок инвестирования, лет = "))]
+func_in_list = [lambda: float(input("Введите начальную сумму, ₽ = ")),
+                lambda: float(input("Введите конечную сумму, ₽ = ")),
+                lambda: int(input("Введите срок инвестирования, лет = "))]
 i = 0
-for key in indict:   # добьёмся от пользователя ввода корректных данных
+for key in indict:  # добьёмся от пользователя ввода корректных данных
     while 1:
         try:
-            indict[key] = funcinlist[i]()
+            indict[key] = func_in_list[i]()
             i += 1
             break
-        except:
+        except ValueError:
             print("\tОшибка. Некорректный ввод")
-print("\t\t\t\t\t\t Простой процент   Сложный процент")
-import math
-print("Размер необходимой процентной ставки, % год.\t", round((indict["final"] / indict["initial"] - 1) * 100 / indict["term"], 2), "\t\t  ", round((math.pow(indict["final"] / indict["initial"], 1 / indict["term"]) - 1) * 100, 2))
+print("\t" * 11, "Простой процент   Сложный процент")
+print("Размер необходимой процентной ставки, % год.\t", end=" ")
+percent = (indict["final"] / indict["initial"] - 1) * 100 / indict["term"]
+print(round(percent, 2), "\t\t  ", end=" ")
+prop = ((indict["final"] / indict["initial"]) ** (1 / indict["term"]) - 1)
+percent = prop * 100
+print(round(percent, 2))
