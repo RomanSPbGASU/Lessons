@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.filedialog as fd
 
 
+# TODO: разработать класс для проверки эффективности работы нейросети, создающий растровое изображение из случайного фрагмента текстового файла и проверки количества ошибок после распознавания текста нейросетью.
 class Neuron:
     def __init__(self, name, in_arr=tuple([0] * 1024)):
         if len(in_arr) != 1024:
@@ -130,6 +131,7 @@ class NeuroNet:
 class Cutter:
     """ Класс, предназначенный для разделения графического фрагмента текста
     на отдельные буквы """
+
     # TODO: Придумать алгоритм определения принадлежности нескольоких
     # областей к одной букве. Возможно по среднему размеру символов (
     # подойдёт только для букв) или по направлению строки. Как, например
@@ -156,49 +158,65 @@ class Cutter:
 
     def cut(self) -> []:
         """ Возвращает связные области бинарного изображения"""
-        class Contour:
-            def __init__(self, img: Image.Image, map: Image.Image, start: ImageDraw.ImageDraw.point):
-                self.SourceImage = None
-                self.CurrentImageMap = None
-            def __passDownLeft(self, p, InvertedAxis):
-                while self.SourceImage.isInside(p):
-                    self.__commitPoint(p)
-                    p = self.__movePoint(p, 0, 1, InvertedAxis)
-                    left = self.__movePoint(p, -1, 0, InvertedAxis)
-                    if self.SourceImage.isFilled(left):
-                        p = self.__commitPoint(left)
-                        while self.SourceImage.isInside(p):
-                            left = self.__movePoint(p, -1, 0, InvertedAxis)
-                            if not self.SourceImage.isFilled(left):
-                                break
-                            p = self.__commitPoint(left)
-                            up = self.__movePoint(p, 0, -1, InvertedAxis)
-                            if self.SourceImage.isFilled(up):
-                                return
-                    else:
-                        while self.SourceImage.isInside(p) and not self.SourceImage.isFilled(p):
-                            right = self.__movePoint(p, 1, 0, InvertedAxis)
-                            rightUp = self.__movePoint(right, 0, -1, InvertedAxis)
-                            if not self.SourceImage.isFilled(rightUp):
-                                return
-                            self.__commitPoint(rightUp)
-                            p = self.__commitPoint(right)
 
+        # Как я понимаю алгоритм разметки изображений:
+        # Идём по изображению по строкам слева направо сверху вниз. Если текущая точка принад
+        # class Contour:
+        #     def __init__(self, img: Image.Image, map: Image.Image, start: ImageDraw.ImageDraw.point):
+        #         self.SourceImage = None
+        #         self.CurrentImageMap = None
+        #     def __passDownLeft(self, p, InvertedAxis):
+        #         while self.SourceImage.isInside(p):
+        #             self.__commitPoint(p)
+        #             p = self.__movePoint(p, 0, 1, InvertedAxis)
+        #             left = self.__movePoint(p, -1, 0, InvertedAxis)
+        #             if self.SourceImage.isFilled(left):
+        #                 p = self.__commitPoint(left)
+        #                 while self.SourceImage.isInside(p):
+        #                     left = self.__movePoint(p, -1, 0, InvertedAxis)
+        #                     if not self.SourceImage.isFilled(left):
+        #                         break
+        #                     p = self.__commitPoint(left)
+        #                     up = self.__movePoint(p, 0, -1, InvertedAxis)
+        #                     if self.SourceImage.isFilled(up):
+        #                         return
+        #             else:
+        #                 while self.SourceImage.isInside(p) and not self.SourceImage.isFilled(p):
+        #                     right = self.__movePoint(p, 1, 0, InvertedAxis)
+        #                     rightUp = self.__movePoint(right, 0, -1, InvertedAxis)
+        #                     if not self.SourceImage.isFilled(rightUp):
+        #                         return
+        #                     self.__commitPoint(rightUp)
+        #                     p = self.__commitPoint(right)
+        #
+        #
+        #     def __movePoint(self, src, x, y, InvertedAxis):
+        #         p = src
+        #         if InvertedAxis:
+        #             x = -x
+        #             y = -y
+        #         p.X += x
+        #         p.Y += y
+        #         return p
+        #
+        #     def __commitPoint(self, p):
+        #         if (not self.CurrentImageMap.isAssigned(p)) and self.SourceImage.isFilled(p):
+        #             self.CurrentImageMap.assignSegment(self, p)
+        #             Points.push_back(p)
+        #         return p
+        class Region(list):
+            """ Класс для хранения заполненной области изображения"""
 
-            def __movePoint(self, src, x, y, InvertedAxis):
-                p = src
-                if InvertedAxis:
-                    x = -x
-                    y = -y
-                p.X += x
-                p.Y += y
-                return p
+            def __init__(self):
+                super().__init__()
+                self.contour = []
 
-            def __commitPoint(self, p):
-                if (not self.CurrentImageMap.isAssigned(p)) and self.SourceImage.isFilled(p):
-                    self.CurrentImageMap.assignSegment(self, p)
-                    push_back(p)
-                return p
+            def add_to_contour(self, point: tuple):
+                self.contour.append(point)
+
+            def is_inside(self, point: tuple):
+                ...
+
         sb = self._binarize()
         width = sb.size[0]
         height = sb.size[1]
