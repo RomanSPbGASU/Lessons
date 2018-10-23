@@ -1,6 +1,10 @@
 import random
 
 
+def again():
+    return input("Сыграем ещё раз? (д/н): ").lower() != "н"
+
+
 class GuessTheWord(object):
     """Класс консольной игры по типу "Поля чудес" """
 
@@ -13,10 +17,11 @@ class GuessTheWord(object):
     for word in file:
         rus_list.append(word)
 
-
-    def __init__(self, word = "example", dif_level = 5):
+    def __init__(self, word="Example"):
         print("{:^80}".format("Игра: Угадайте слово\n"))
+        self.word = word
         self.dif_level = 5
+        self.mis_max = 12
         self.cage = ""
         self.letters = ""
         self.mistakes = 0
@@ -37,14 +42,18 @@ class GuessTheWord(object):
         try:
             dif_level = int(input("Выберите уровень сложности (0-10): "))
             if dif_level < 0 or dif_level > 10:
-                raise self.DifLevelEx("Уровень сложности должен быть в диапазоне от 0 до 10. ")
+                raise self.DifLevelEx("Уровень сложности должен быть в "
+                                      "диапазоне от 0 до 10. ")
             else:
                 self.dif_level = dif_level
         except (ValueError, self.DifLevelEx) as ex:
-            print(ex.args[0] if type(ex) != ValueError else "Ошибка. Необходимо ввести число. ", 
+            print(ex.args[0] if type(ex) != ValueError else "Ошибка. "
+                                                            "Необходимо "
+                                                            "ввести число. ",
                   "Значение по умолчанию: 5")
         self.mistakes = 0
-        self.mis_max = int((32 - len(set(self.word))) * (10 - self.dif_level) / 10)
+        self.mis_max = int(
+            (32 - len(set(self.word))) * (10 - self.dif_level) / 10)
 
     def choose_word(self, word):
         try:
@@ -55,7 +64,7 @@ class GuessTheWord(object):
         else:
             self.word = word
             self.cage = ""
-            for letter in word:
+            for _ in word:
                 self.cage += "*"
 
     def choose_rnd_word(self):
@@ -69,13 +78,14 @@ class GuessTheWord(object):
     def update_cage(self, letter):
         for i, lt in enumerate(self.word):
             if lt == letter:
-                self.cage = self.cage[:i] + lt + self.cage[i+1:]
+                self.cage = self.cage[:i] + lt + self.cage[i + 1:]
 
     def put_letter(self):
         """Метод выводит диалог о вводе предполагаемой буквы. """
         try:
             ltr = str(input("Введите букву: ").lower())
-            if ltr == "ё": ltr = "e"
+            if ltr == "ё":
+                ltr = "e"
             if ltr in self.letters:
                 raise self.LettersEx("Эту букву вы уже выбирали")
             self.letters += ltr
@@ -83,16 +93,17 @@ class GuessTheWord(object):
                 self.update_cage(ltr)
             else:
                 if ord(ltr) not in range(0x430, 0x44F):
-                    raise self.LettersEx("Необходимо использовать только русские буквы.")
+                    raise self.LettersEx(
+                        "Необходимо использовать только русские буквы.")
                 self.mistakes += 1
-                raise self.LettersEx("Буквы '%s' в этом слове нет. Количество ошибок: %d / %d" % (ltr, self.mistakes, self.mis_max))
+                raise self.LettersEx(
+                    "Буквы '%s' в этом слове нет. Количество ошибок: %d / %d"
+                    % (ltr, self.mistakes, self.mis_max))
         except self.LettersEx as le:
-            print(le.args[0], "\nИспользованные буквы: ", *list(sorted(self.letters)))
+            print(le.args[0], "\nИспользованные буквы: ",
+                  *list(sorted(self.letters)))
         except Exception as ex:
             print(ex)
-
-    def again(self):
-        return input("Сыграем ещё раз? (д/н): ").lower() != "н"
 
     def play_game(self):
         while 1:
@@ -108,7 +119,7 @@ class GuessTheWord(object):
             else:
                 print("Вы проиграли")
                 print("Загаданное слово: %s" % self.word)
-            if not self.again():
+            if not again():
                 break
 
 
