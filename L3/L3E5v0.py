@@ -6,7 +6,7 @@ while 1:
         if inp == '':
             raise IOError()
         if inp == "stop":
-           break
+            break
         num = int(inp)
         res += num
     except ValueError:
