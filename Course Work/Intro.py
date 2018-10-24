@@ -210,9 +210,26 @@ class Cutter:
             def __init__(self):
                 super().__init__()
                 self.contour = []
+                # [[y1, x1, x2, x3],[y2, x1], [y3, x4, x5, x6]]
+            def add_to_contour(self, point) -> None:
+                # вставка в отсортированный массив (двумерный) методом деления пополам
+                def __get_medium_y(ind_coll) -> int:
+                    return ind_coll[len(ind_coll) // 2][0]
+                start = 0
+                end = len(self.contour)
+                while 1:
+                    medium = __get_medium_y(self.contour[start: end])
+                    if point > medium:
+                        start = medium
+                    if point < medium:
+                        end = medium
+                    if point == medium:
+                        # здесь обход по иксам
+                        ...
 
-            def add_to_contour(self, point: tuple):
-                self.contour.append(point)
+                    if start - end == 1:
+                        self.contour.insert(end, [point])
+                        break
 
             def is_inside(self, point: tuple):
                 ...
