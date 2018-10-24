@@ -211,28 +211,70 @@ class Cutter:
                 super().__init__()
                 self.contour = []
                 # [[y1, x1, x2, x3],[y2, x1], [y3, x4, x5, x6]]
-            def add_to_contour(self, point) -> None:
-                # вставка в отсортированный массив (двумерный) методом деления пополам
-                def __get_medium_y(ind_coll) -> int:
-                    return ind_coll[len(ind_coll) // 2][0]
+
+            def add_to_contour(self, point: tuple) -> None:
                 start = 0
                 end = len(self.contour)
+                sc = self.contour
                 while 1:
-                    medium = __get_medium_y(self.contour[start: end])
-                    if point > medium:
+                    medium = sc[len(sc[start:end]) // 2][0]
+                    if point[0] > medium:
                         start = medium
-                    if point < medium:
+                    if point[0] < medium:
                         end = medium
-                    if point == medium:
-                        # здесь обход по иксам
-                        ...
-
+                    if point[0] == medium:
+                        row = self.contour[medium]
+                        start = 0
+                        end = len(row)
+                        while 1:
+                            medium = row[len(row[start:end]) // 2]
+                            if point[1] > medium:
+                                start = medium
+                            if point[1] < medium:
+                                end = medium
+                            if point[1] == medium:
+                                raise ValueError("Такая точка уже существует")
+                            if start - end == 1:
+                                self.contour[medium].insert(end, point[1])
                     if start - end == 1:
                         self.contour.insert(end, [point])
                         break
 
-            def is_inside(self, point: tuple):
+            def is_inside(self, point: tuple) -> bool:
+                start = 0
+                end = len(self.contour)
+                sc = self.contour
+                while 1:
+                    medium = sc[len(sc[start:end]) // 2][0]
+                    if point[0] > medium:
+                        start = medium
+                    if point[0] < medium:
+                        end = medium
+                    if point[0] == medium:
+                        row = self.contour[medium]
+                        start = 0
+                        end = len(row)
+                        while 1:
+                            medium = row[len(row[start:end]) // 2]
+                            if point[1] > medium:
+                                start = medium
+                            if point[1] < medium:
+                                end = medium
+                            if point[1] == medium:
+                                return True
+                            if start - end == 1:
+                                return False
+                    if start - end == 1:
+                        break
+                return False
+
+            def __contains_by_half(self):
+                # TODO: сделать рефакторинг - вынести цикл в отдельный метод
                 ...
+
+            def get_bitmap(self) -> :
+                """ Получение объекта в виде битового массива"""
+
 
         sb = self._binarize()
         width = sb.size[0]
