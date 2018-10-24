@@ -9,9 +9,9 @@ class GuessTheWord(object):
     """Класс консольной игры по типу "Поля чудес" """
 
     try:
-        file = open('word_rus.txt', 'r')
+        file = open('../L4/word_rus.txt', 'r')
     except Exception as ex:
-        print("Ошибка: %s" % ex.args[0])
+        print("Ошибка: %s" % ex.args[1])
         raise SystemExit
     rus_list = []
     for word in file:
