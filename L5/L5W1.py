@@ -9,4 +9,4 @@ if __name__ == "__main__":
         except ValueError:
             print("Err")
             continue
-        print("mm:", pix_to_mm(pix))
+        print("mm:", round(pix_to_mm(pix), 2))
