@@ -160,7 +160,7 @@ class Cutter:
         """ Возвращает связные области бинарного изображения"""
 
         # Как я понимаю алгоритм разметки изображений:
-        # Идём по изображению по строкам слева направо сверху вниз. Если текущая точка принад
+        # Идём по изображению по строкам слева направо сверху вниз. Если текущая точка принадлежит
         # class Contour:
         #     def __init__(self, img: Image.Image, map: Image.Image, start: ImageDraw.ImageDraw.point):
         #         self.SourceImage = None
@@ -209,72 +209,121 @@ class Cutter:
 
             def __init__(self):
                 super().__init__()
+                self.top_y = 0
+                self.left_x = 0
+                self.len = 0
                 self.contour = []
-                # [[y1, x1, x2, x3],[y2, x1], [y3, x4, x5, x6]]
+                # [[x1, x2, x3], [x1], [x4, x5, x6]]
+
+            def __len__(self):
+                return self.len
+
+            def __iter__(self):
+                for row in self.contour:
+                    yield from row
+
+            def __reversed__(self):
+                raise AttributeError
+
+            def __contains__(self, item):
+                x, y = item
+                try:
+                    return Region.inhere(self.contour[y - self.top_y], x)
+                except IndexError:
+                    return False
 
             def add_to_contour(self, point: tuple) -> None:
-                start = 0
-                end = len(self.contour)
-                sc = self.contour
-                while 1:
-                    medium = sc[len(sc[start:end]) // 2][0]
-                    if point[0] > medium:
-                        start = medium
-                    if point[0] < medium:
-                        end = medium
-                    if point[0] == medium:
-                        row = self.contour[medium]
-                        start = 0
-                        end = len(row)
-                        while 1:
-                            medium = row[len(row[start:end]) // 2]
-                            if point[1] > medium:
-                                start = medium
-                            if point[1] < medium:
-                                end = medium
-                            if point[1] == medium:
-                                raise ValueError("Такая точка уже существует")
-                            if start - end == 1:
-                                self.contour[medium].insert(end, point[1])
-                    if start - end == 1:
-                        self.contour.insert(end, [point])
-                        break
+                """ Добавление точки контура в объект"""
+                x, y = point[0]
+                len_y = len(self.contour)
+                bottom_y = self.top_y + len_y - 1
+                if y < self.top_y:
+                    self.contour = [x] + [[]] * (self.top_y - y)
+                    self.len += self.top_y - y + 1
+                    return
+                if y > bottom_y:
+                    self.contour.extend([[]] * (y - bottom_y) + [x])
+                    self.len += self.top_y - y + 1
+                    return
+                current_y = y - self.top_y
+                row = self.contour[current_y]
+                Region.insort(row, x)
+                self.len += 1
 
             def is_inside(self, point: tuple) -> bool:
-                start = 0
-                end = len(self.contour)
-                sc = self.contour
-                while 1:
-                    medium = sc[len(sc[start:end]) // 2][0]
-                    if point[0] > medium:
-                        start = medium
-                    if point[0] < medium:
-                        end = medium
-                    if point[0] == medium:
-                        row = self.contour[medium]
-                        start = 0
-                        end = len(row)
-                        while 1:
-                            medium = row[len(row[start:end]) // 2]
-                            if point[1] > medium:
-                                start = medium
-                            if point[1] < medium:
-                                end = medium
-                            if point[1] == medium:
-                                return True
-                            if start - end == 1:
-                                return False
-                    if start - end == 1:
-                        break
-                return False
+                """
+                Проверка, находится ли точка внутри контура
 
-            def __contains_by_half(self):
-                # TODO: сделать рефакторинг - вынести цикл в отдельный метод
+                :param point: итерируемый объект содержащий координаты X и Y
+                :return: True, если точка внутри контура (принадлежит ему)
+                """
+                x, y = point
+                current_y = y - self.top_y
+                index = Region.get_pos(self.contour[current_y], x)
+                try:
+                    if x == self.contour[index]:
+                        return True
+                    else:
+                        return bool(index % 2)
+                except IndexError:
+                    return False
+
+            def walk_around(self, start: tuple, clockwise=True):
+                raise AttributeError
+
+            @staticmethod
+            def get_pos(row: list, val: int) -> int:
+                """
+                Возвращает предполагаемую позицию элемента в ряду
+
+                :param row: итерируемый объект
+                :param val: значение для поиска
+                :return: позиция элемента
+                """
+                start = 0
+                end = len(row)
+                medium = (end - start) // 2
+                while (end - start) >= 1:
+                    if val == row[medium]:
+                        break
+                    if val > row[medium]:
+                        start = medium
+                    else:
+                        end = medium
+                return medium  # +1
+
+            @staticmethod
+            def insort(row: list, val: int) -> int:
+                """
+                Вставляет значение в отсортированный ряд
+
+                :param row: список для вставки
+                :param val: Добавляемое значение
+                :return: индекс добавленного значения в ряду
+                """
+                index = Region.get_pos(row, val)
+                if val != row[index]:
+                    row.insert(index, val)
+                return index
+
+            @staticmethod
+            def inhere(row: list, val: int) -> bool:
+                """
+                Ищет значение в ряду
+
+                :param row: список для поиска
+                :param val: значение для поиска
+                :return: True, если элемент найден, иначе False
+                """
+                if val == row[Region.get_pos(row, val)]:
+                    return True
+
+            def get_bitmap(self):
+                """ Получение объекта в виде битового массива"""
                 ...
 
-            def get_bitmap(self) -> :
-                """ Получение объекта в виде битового массива"""
-
+            def get_points(self):
+                ...
 
         sb = self._binarize()
         width = sb.size[0]
