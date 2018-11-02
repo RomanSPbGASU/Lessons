@@ -142,7 +142,7 @@ class Cutter:
 
     def __init__(self, filename):
         self.image = Image.open(filename)
-        self.l_count = 1
+        self.obj_count = 1
         self.binary = None
         self.marked = None
 
@@ -204,8 +204,9 @@ class Cutter:
         #             self.CurrentImageMap.assignSegment(self, p)
         #             Points.push_back(p)
         #         return p
-        class Region(list):
-            """ Класс для хранения заполненной области изображения"""
+
+        class Region:
+            """ Класс для хранения заполненной области изображения """
 
             def __init__(self):
                 super().__init__()
@@ -232,8 +233,19 @@ class Cutter:
                 except IndexError:
                     return False
 
+            def __add__(self, other) -> __name__.Region:
+                """
+                Объединение объектов
+                """
+                ...
+
             def add_to_contour(self, point: tuple) -> None:
-                """ Добавление точки контура в объект"""
+                """
+                Добавление точки контура в объект
+
+                :param point: итерируемый объект содержащий координаты X и Y
+                :return: None
+                """
                 x, y = point[0]
                 len_y = len(self.contour)
                 bottom_y = self.top_y + len_y - 1
@@ -257,6 +269,7 @@ class Cutter:
                 :param point: итерируемый объект содержащий координаты X и Y
                 :return: True, если точка внутри контура (принадлежит ему)
                 """
+                # TODO: переписать метод с учётом особых точек (пиков)
                 x, y = point
                 current_y = y - self.top_y
                 index = Region.get_pos(self.contour[current_y], x)
@@ -269,6 +282,7 @@ class Cutter:
                     return False
 
             def walk_around(self, start: tuple, clockwise=True):
+                # TODO: реализовать метод, так как он понадобится при разбиении изображения
                 raise AttributeError
 
             @staticmethod
@@ -328,11 +342,15 @@ class Cutter:
         sb = self._binarize()
         width = sb.size[0]
         height = sb.size[1]
-        # TODO: разобрать как в Python явно задавать область видимости
+
+        regions = []
         for i in range(height):
             for j in range(width):
-                point = (i, j)
-                print(sb.getpixel(point))
+                point = (j, i)
+                if sb.getpixel(point):
+                    regions.append(point)
+                    while sb:
+                        ...
 
 
 if __name__ == "__main__":
@@ -346,5 +364,5 @@ if __name__ == "__main__":
 
     neuron = Neuron("Example")
     print(neuron)
-    neuron.save_png("D:/Desktop/Python/Lessons-Python/Course Work/")
-    neuron.save("D:/Desktop/Python/Lessons Python/Course Work/")
+    neuron.save_png("D:/Desktop/Python/Lessons-Python/Course_Work/")
+    neuron.save("D:/Desktop/Python/Lessons Python/Course_Work/")
