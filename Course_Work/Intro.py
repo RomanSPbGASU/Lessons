@@ -305,22 +305,15 @@ class Cutter:
                     if x == self.contour[index]:
                         return True
                     else:
-                        def is_contour_point(x, y):
-                            return Region.get_pos(self.contour[y], x)
+                        def is_contour_point(x, x_offset, y) -> bool:
+                            res = self.contour[y][Region.get_pos(self.contour[y], x) - x_offset] == x + x_offset
+                            return res
 
                         crossings = 0
                         for x_coord in self.contour[current_y][:index]:
-                            upper_left = self.contour[current_y - 1][
-                                             Region.get_pos(
-                                                 self.contour[current_y - 1],
-                                                 x_coord) - 1] == x_coord - 1
-                            upper = self.contour[current_y - 1][
-                                Region.get_pos(self.contour[current_y - 1],
-                                               x_coord)]
-                            upper_right = self.contour[current_y - 1][
-                                              Region.get_pos(
-                                                  self.contour[current_y - 1],
-                                                  x_coord) + 1] == x_coord + 1
+                            upper_left =  self.contour[current_y - 1][Region.get_pos(self.contour[current_y - 1], x_coord) - 1] == x_coord - 1
+                            upper =       self.contour[current_y - 1][Region.get_pos(self.contour[current_y - 1], x_coord)]
+                            upper_right = self.contour[current_y - 1][Region.get_pos(self.contour[current_y - 1], x_coord) + 1] == x_coord + 1
                             current = point
                             lower_left = is_contour_point(current_y + 1, x - 1)
                             lower = is_contour_point(current_y + 1, x)

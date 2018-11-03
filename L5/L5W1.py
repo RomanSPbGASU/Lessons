@@ -10,3 +10,7 @@ if __name__ == "__main__":
             print("Err")
             continue
         print("mm:", round(pix_to_mm(pix), 2))
+
+
+string = input()
+length = input()
