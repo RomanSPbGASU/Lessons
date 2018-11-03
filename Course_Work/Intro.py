@@ -213,8 +213,12 @@ class Cutter:
                 self.top_y = 0
                 self.left_x = 0
                 self.len = 0
+                """ Количество элементов в контуре"""
                 self.contour = []
-                # [[x1, x2, x3], [x1], [x4, x5, x6]]
+                """ Точки контура. Y-координата = top_y + index:
+                [[x1, x2, x3], [x1], [x4, x5, x6], ...]"""
+                self.closed = True
+                """ Замкнутость контура"""
 
             def __len__(self):
                 return self.len
@@ -224,6 +228,7 @@ class Cutter:
                     yield from row
 
             def __reversed__(self):
+                ...
                 raise AttributeError
 
             def __contains__(self, item):
@@ -262,6 +267,29 @@ class Cutter:
                 Region.insort(row, x)
                 self.len += 1
 
+            def is_inside_simple(self, point: tuple) -> bool:
+                """
+                Нахождение точки внутри контра без учёта особых точек
+
+                Осуществляется проведением луча вдоль оси Х и подсчёта
+                пересечений. Работает быстрее, чем is_inside для выпуклых
+                фигур. Однако для невыпуклых фигур дает сбой, если на своём
+                пути луч проходит по касательной к фигуре
+
+                :param point: итерируемый объект содержащий координаты X и Y
+                :return: True, если точка внутри контура (принадлежит ему)
+                """
+                x, y = point
+                current_y = y - self.top_y
+                index = Region.get_pos(self.contour[current_y], x)
+                try:
+                    if x == self.contour[index]:
+                        return True
+                    else:
+                        return bool(index % 2)
+                except IndexError:
+                    return False
+
             def is_inside(self, point: tuple) -> bool:
                 """
                 Проверка, находится ли точка внутри контура
@@ -277,7 +305,31 @@ class Cutter:
                     if x == self.contour[index]:
                         return True
                     else:
-                        return bool(index % 2)
+                        def is_contour_point(x, y):
+                            return Region.get_pos(self.contour[y], x)
+
+                        crossings = 0
+                        for x_coord in self.contour[current_y][:index]:
+                            upper_left = self.contour[current_y - 1][
+                                             Region.get_pos(
+                                                 self.contour[current_y - 1],
+                                                 x_coord) - 1] == x_coord - 1
+                            upper = self.contour[current_y - 1][
+                                Region.get_pos(self.contour[current_y - 1],
+                                               x_coord)]
+                            upper_right = self.contour[current_y - 1][
+                                              Region.get_pos(
+                                                  self.contour[current_y - 1],
+                                                  x_coord) + 1] == x_coord + 1
+                            current = point
+                            lower_left = is_contour_point(current_y + 1, x - 1)
+                            lower = is_contour_point(current_y + 1, x)
+                            lower_right = is_contour_point(current_y + 1,
+                                                           x + 1)
+
+                            (upper_left or upper or upper_right) and (
+                                    lower_left or lower or lower_right)
+                        return bool(crossings % 2)
                 except IndexError:
                     return False
 
