@@ -297,7 +297,6 @@ class Cutter:
                 :param point: итерируемый объект содержащий координаты X и Y
                 :return: True, если точка внутри контура (принадлежит ему)
                 """
-                # TODO: переписать метод с учётом особых точек (пиков)
                 x, y = point
                 current_y = y - self.top_y
                 index = Region.get_pos(self.contour[current_y], x)
@@ -305,23 +304,24 @@ class Cutter:
                     if x == self.contour[index]:
                         return True
                     else:
-                        def is_contour_point(x, x_offset, y) -> bool:
-                            res = self.contour[y][Region.get_pos(self.contour[y], x) - x_offset] == x + x_offset
+                        def is_c_point(x, x_offset, y) -> bool:
+                            res = self.contour[y][
+                                Region.get_pos(self.contour[y], x) - x_offset
+                                      ] == x + x_offset
                             return res
 
                         crossings = 0
                         for x_coord in self.contour[current_y][:index]:
-                            upper_left =  self.contour[current_y - 1][Region.get_pos(self.contour[current_y - 1], x_coord) - 1] == x_coord - 1
-                            upper =       self.contour[current_y - 1][Region.get_pos(self.contour[current_y - 1], x_coord)]
-                            upper_right = self.contour[current_y - 1][Region.get_pos(self.contour[current_y - 1], x_coord) + 1] == x_coord + 1
-                            current = point
-                            lower_left = is_contour_point(current_y + 1, x - 1)
-                            lower = is_contour_point(current_y + 1, x)
-                            lower_right = is_contour_point(current_y + 1,
-                                                           x + 1)
+                            upper_left = is_c_point(x_coord, -1, current_y - 1)
+                            upper = is_c_point(x_coord, 0, current_y - 1)
+                            upper_right = is_c_point(x_coord, 1, current_y - 1)
+                            lower_left = is_c_point(x_coord, -1, current_y + 1)
+                            lower = is_c_point(x_coord, 0, current_y + 1)
+                            lower_right = is_c_point(x_coord, 1, current_y + 1)
 
-                            (upper_left or upper or upper_right) and (
-                                    lower_left or lower or lower_right)
+                            if (upper_left or upper or upper_right) and (
+                                    lower_left or lower or lower_right):
+                                crossings += 1
                         return bool(crossings % 2)
                 except IndexError:
                     return False
