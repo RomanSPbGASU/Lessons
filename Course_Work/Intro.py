@@ -121,7 +121,7 @@ class NeuroNet:
         in_arr: входной список (должен быть одномерным)
         """
         # TODO: подумать на чём лучше обучать на контурных изображениях или
-        # на залитых
+        # на залитых или на скелетированных
         for neuron in self.big:
             ...
         for neuron in self.small:
@@ -300,35 +300,66 @@ class Cutter:
                 x, y = point
                 current_y = y - self.top_y
                 index = Region.get_pos(self.contour[current_y], x)
-                try:
-                    if x == self.contour[index]:
-                        return True
-                    else:
-                        def is_c_point(x, x_offset, y) -> bool:
-                            res = self.contour[y][
-                                Region.get_pos(self.contour[y], x) - x_offset
-                                      ] == x + x_offset
-                            return res
+                if x == self.contour[index]:
+                    return True
 
-                        crossings = 0
-                        for x_coord in self.contour[current_y][:index]:
-                            upper_left = is_c_point(x_coord, -1, current_y - 1)
-                            upper = is_c_point(x_coord, 0, current_y - 1)
-                            upper_right = is_c_point(x_coord, 1, current_y - 1)
-                            lower_left = is_c_point(x_coord, -1, current_y + 1)
-                            lower = is_c_point(x_coord, 0, current_y + 1)
-                            lower_right = is_c_point(x_coord, 1, current_y + 1)
+                def is_c_point(x, x_offset, y) -> bool:
+                    """
+                    Проверяет принадлежность точки контуру
 
-                            if (upper_left or upper or upper_right) and (
-                                    lower_left or lower or lower_right):
-                                crossings += 1
-                        return bool(crossings % 2)
-                except IndexError:
-                    return False
+                    :param x: координата
+                    :param x_offset: смещение координаты x
+                    :param y: координата
+                    :return: True, если принадлежит
+                    """
+                    res = x + x_offset == self.contour[y][
+                        Region.get_pos(self.contour[y], x) + x_offset]
+                    return res
+
+                crossings = 0
+                for x_coord in self.contour[current_y][:index]:
+                    upper_l = is_c_point(x_coord, -1, current_y - 1)
+                    upper = is_c_point(x_coord, 0, current_y - 1)
+                    upper_r = is_c_point(x_coord, 1, current_y - 1)
+                    lower_l = is_c_point(x_coord, -1, current_y + 1)
+                    lower = is_c_point(x_coord, 0, current_y + 1)
+                    lower_r = is_c_point(x_coord, 1, current_y + 1)
+
+                    if upper_l ^ upper ^ upper_r & lower_l ^ lower ^ lower_r:
+                        crossings += 1
+                return bool(crossings % 2)
+
+            def walk_around_simple(self, start: tuple, clockwise=True):
+                """
+                Обходит контур выпуклой фигуры от заданной точки.
+
+                 Если заданная точка не принадлежит контуру, обход
+                 начинается с ближайшей точки
+
+                :param start: точка от которой начинается обход
+                :param clockwise: направление по часовой стрелке
+                :return:
+                """
 
             def walk_around(self, start: tuple, clockwise=True):
-                # TODO: реализовать метод, так как он понадобится при разбиении изображения
-                raise AttributeError
+                """
+                 Обходит контур от заданной точки
+
+                 Если заданная точка не принадлежит контуру, обход
+                 начинается с ближайшей точки
+
+                :param start: точка от которой начинается обход
+                :param clockwise: направление по часовой стрелке
+                :return:
+                """
+                if start not in self.contour:
+                    ...
+                    return
+                else:
+                    ...
+                # TODO: реализовать метод, так как он понадобится при
+                # разбиении изображения
+                ...
 
             @staticmethod
             def get_pos(row: list, val: int) -> int:
