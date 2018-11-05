@@ -244,12 +244,14 @@ class Cutter:
                 except IndexError:
                     return False
 
-            def __add__(self, other) -> __name__.Region:
+            def __add__(self, other):
                 """
                 Объединение объектов
                 """
+                # сначала приведём объекты к одной системе координат
+                # потом удалим точки, ставшие внутренними
+                # TODO: реализовать функцию
                 ...
-                # TODO: реализовать функцию, может понадобиться
 
             def add_to_contour(self, point: tuple) -> None:
                 """
@@ -347,6 +349,7 @@ class Cutter:
                 :param clockwise: направление по часовой стрелке
                 :return:
                 """
+                ...
 
             def walk_around(self, start: tuple, clockwise=False):
                 """
@@ -362,39 +365,40 @@ class Cutter:
                 if start not in self.contour:
                     ...
                     return
-                else:
-                    def bordered_points(point: tuple, first=(-1, -1)):
-                        """
-                        Генерирует соседние точки по часовой стрелке
 
-                        :param point: центральная точка
-                        :param first: начальная точка относительно центральной
-                        """
-                        x, y = point
-                        circle = [[-1, -1], [0, -1], [1, -1],
-                                  [1, 0],
-                                  [1, 1], [0, 1], [-1, 1],
-                                  [-1, 0]]
-                        index = circle.index(first) + 1
-                        for i in circle[index:] + circle[:index]:
-                            yield (i[0] + x, i[1] + y)
-                    if clockwise:
-                        ...
-                    yield start
-                    current = start
-                    init = [-1, -1]
-                    for b_p in bordered_points(current, init):
-                        if self.is_inside(b_p) and b_p not in self:
-                            init = [b_p[i] - c for i, c in enumerate(current)]
-                            break
-                    while 1:
-                        for border_point in bordered_points(current, init):
-                            if border_point in self:
-                                init = current
-                                current = border_point
-                        if current == start:
-                            break
-                        yield current
+                def bordered_points(point: tuple, first=(-1, -1)):
+                    """
+                    Генерирует соседние точки по часовой стрелке
+
+                    :param point: центральная точка
+                    :param first: начальная точка относительно центральной
+                    """
+                    x, y = point
+                    circle = [[-1, -1], [0, -1], [1, -1],
+                              [1, 0],
+                              [1, 1], [0, 1], [-1, 1],
+                              [-1, 0]]
+                    index = circle.index(first) + 1
+                    for i in circle[index:] + circle[:index]:
+                        yield (i[0] + x, i[1] + y)
+
+                if clockwise:
+                    ...
+                yield start
+                current = start
+                init = [-1, -1]
+                for b_p in bordered_points(current, init):
+                    if self.is_inside(b_p) and b_p not in self:
+                        init = [b_p[i] - c for i, c in enumerate(current)]
+                        break
+                while 1:
+                    for border_point in bordered_points(current, init):
+                        if border_point in self:
+                            init = current
+                            current = border_point
+                    if current == start:
+                        break
+                    yield current
 
             @staticmethod
             def get_pos(row: list, val: int) -> int:
