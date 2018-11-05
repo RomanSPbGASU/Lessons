@@ -232,6 +232,12 @@ class Cutter:
                 raise AttributeError
 
             def __contains__(self, item):
+                """
+                Проверяет, относится ли точка к контуру
+
+                :param item: точка
+                :return: True, если относится
+                """
                 x, y = item
                 try:
                     return Region.inhere(self.contour[y - self.top_y], x)
@@ -243,6 +249,7 @@ class Cutter:
                 Объединение объектов
                 """
                 ...
+                # TODO: реализовать функцию, может понадобиться
 
             def add_to_contour(self, point: tuple) -> None:
                 """
@@ -341,7 +348,7 @@ class Cutter:
                 :return:
                 """
 
-            def walk_around(self, start: tuple, clockwise=True):
+            def walk_around(self, start: tuple, clockwise=False):
                 """
                  Обходит контур от заданной точки
 
@@ -356,10 +363,38 @@ class Cutter:
                     ...
                     return
                 else:
-                    ...
-                # TODO: реализовать метод, так как он понадобится при
-                # разбиении изображения
-                ...
+                    def bordered_points(point: tuple, first=(-1, -1)):
+                        """
+                        Генерирует соседние точки по часовой стрелке
+
+                        :param point: центральная точка
+                        :param first: начальная точка относительно центральной
+                        """
+                        x, y = point
+                        circle = [[-1, -1], [0, -1], [1, -1],
+                                  [1, 0],
+                                  [1, 1], [0, 1], [-1, 1],
+                                  [-1, 0]]
+                        index = circle.index(first) + 1
+                        for i in circle[index:] + circle[:index]:
+                            yield (i[0] + x, i[1] + y)
+                    if clockwise:
+                        ...
+                    yield start
+                    current = start
+                    init = [-1, -1]
+                    for b_p in bordered_points(current, init):
+                        if self.is_inside(b_p) and b_p not in self:
+                            init = [b_p[i] - c for i, c in enumerate(current)]
+                            break
+                    while 1:
+                        for border_point in bordered_points(current, init):
+                            if border_point in self:
+                                init = current
+                                current = border_point
+                        if current == start:
+                            break
+                        yield current
 
             @staticmethod
             def get_pos(row: list, val: int) -> int:
