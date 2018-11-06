@@ -143,69 +143,23 @@ class Cutter:
     def __init__(self, filename):
         self.image = Image.open(filename)
         self.obj_count = 1
-        self.binary = None
+        # self.binary = None
         self.marked = None
 
     def _binarize(self) -> Image.Image:
         """ Преобразует исходное изображение в бинарное (с инверсией)"""
         sb = self.image.convert(mode="1")
-        for i in range(32):
-            for j in range(32):
+        for i in range(sb.size[0]):
+            for j in range(sb.size[1]):
                 point = (i, j)
                 sb.putpixel(point, int(not sb.getpixel(point)))
-        self.binary = sb
+        # self.binary = sb
         return sb
 
     def cut(self) -> []:
         """ Возвращает связные области бинарного изображения"""
 
-        # Как я понимаю алгоритм разметки изображений:
-        # Идём по изображению по строкам слева направо сверху вниз. Если текущая точка принадлежит
-        # class Contour:
-        #     def __init__(self, img: Image.Image, map: Image.Image, start: ImageDraw.ImageDraw.point):
-        #         self.SourceImage = None
-        #         self.CurrentImageMap = None
-        #     def __passDownLeft(self, p, InvertedAxis):
-        #         while self.SourceImage.isInside(p):
-        #             self.__commitPoint(p)
-        #             p = self.__movePoint(p, 0, 1, InvertedAxis)
-        #             left = self.__movePoint(p, -1, 0, InvertedAxis)
-        #             if self.SourceImage.isFilled(left):
-        #                 p = self.__commitPoint(left)
-        #                 while self.SourceImage.isInside(p):
-        #                     left = self.__movePoint(p, -1, 0, InvertedAxis)
-        #                     if not self.SourceImage.isFilled(left):
-        #                         break
-        #                     p = self.__commitPoint(left)
-        #                     up = self.__movePoint(p, 0, -1, InvertedAxis)
-        #                     if self.SourceImage.isFilled(up):
-        #                         return
-        #             else:
-        #                 while self.SourceImage.isInside(p) and not self.SourceImage.isFilled(p):
-        #                     right = self.__movePoint(p, 1, 0, InvertedAxis)
-        #                     rightUp = self.__movePoint(right, 0, -1, InvertedAxis)
-        #                     if not self.SourceImage.isFilled(rightUp):
-        #                         return
-        #                     self.__commitPoint(rightUp)
-        #                     p = self.__commitPoint(right)
-        #
-        #
-        #     def __movePoint(self, src, x, y, InvertedAxis):
-        #         p = src
-        #         if InvertedAxis:
-        #             x = -x
-        #             y = -y
-        #         p.X += x
-        #         p.Y += y
-        #         return p
-        #
-        #     def __commitPoint(self, p):
-        #         if (not self.CurrentImageMap.isAssigned(p)) and self.SourceImage.isFilled(p):
-        #             self.CurrentImageMap.assignSegment(self, p)
-        #             Points.push_back(p)
-        #         return p
-
-        class Region:
+        class Contour:
             """ Класс для хранения заполненной области изображения """
 
             def __init__(self):
@@ -240,7 +194,7 @@ class Cutter:
                 """
                 x, y = item
                 try:
-                    return Region.inhere(self.contour[y - self.top_y], x)
+                    return Contour.inhere(self.contour[y - self.top_y], x)
                 except IndexError:
                     return False
 
@@ -273,7 +227,7 @@ class Cutter:
                     return
                 current_y = y - self.top_y
                 row = self.contour[current_y]
-                Region.insort(row, x)
+                Contour.insort(row, x)
                 self.len += 1
 
             def is_inside_simple(self, point: tuple) -> bool:
@@ -290,7 +244,7 @@ class Cutter:
                 """
                 x, y = point
                 current_y = y - self.top_y
-                index = Region.get_pos(self.contour[current_y], x)
+                index = Contour.get_pos(self.contour[current_y], x)
                 try:
                     if x == self.contour[index]:
                         return True
@@ -308,7 +262,7 @@ class Cutter:
                 """
                 x, y = point
                 current_y = y - self.top_y
-                index = Region.get_pos(self.contour[current_y], x)
+                index = Contour.get_pos(self.contour[current_y], x)
                 if x == self.contour[index]:
                     return True
 
@@ -322,7 +276,7 @@ class Cutter:
                     :return: True, если принадлежит
                     """
                     res = x + x_offset == self.contour[y][
-                        Region.get_pos(self.contour[y], x) + x_offset]
+                        Contour.get_pos(self.contour[y], x) + x_offset]
                     return res
 
                 crossings = 0
@@ -430,7 +384,7 @@ class Cutter:
                 :param val: Добавляемое значение
                 :return: индекс добавленного значения в ряду
                 """
-                index = Region.get_pos(row, val)
+                index = Contour.get_pos(row, val)
                 if val != row[index]:
                     row.insert(index, val)
                 return index
@@ -444,7 +398,7 @@ class Cutter:
                 :param val: значение для поиска
                 :return: True, если элемент найден, иначе False
                 """
-                if val == row[Region.get_pos(row, val)]:
+                if val == row[Contour.get_pos(row, val)]:
                     return True
 
             def get_bitmap(self):
@@ -454,18 +408,42 @@ class Cutter:
             def get_points(self):
                 ...
 
-        sb = self._binarize()
-        width = sb.size[0]
-        height = sb.size[1]
+        marked = self._binarize()
+        width = marked.size[0]
+        height = marked.size[1]
 
-        regions = []
+        borders = {} # {region_number: (up, right, bottom, left), ...}
+        region_number = 0
         for i in range(height):
             for j in range(width):
-                point = (j, i)
-                if sb.getpixel(point):
-                    regions.append(point)
-                    while sb:
+                try:
+                    pixel = marked.getpixel((j, i))
+                    up_l = marked.getpixel((j - 1, i - 1))
+                    up = marked.getpixel((j, i - 1))
+                    up_r = marked.getpixel((j + 1, i - 1))
+                    prev = marked.getpixel((j - 1, i))
+                except IndexError:
+                    continue
+                if pixel:
+                    if not (up_l or up or up_r or prev):
+                        region_number += 1
+                        marked.putpixel((j, i), region_number)
+                        borders[region_number] = ((j, i) * 4)
+                    else:
                         ...
+                        # проверить к каким объектам принадлежат точки
+                        # если к одному и тому же, то добавить к нему текущую
+                        # если к разным, то объединить в один
+                        #
+                        # проверять, не является ли текущая точка крайней
+
+
+
+
+
+
+class Region:
+    ...
 
 
 if __name__ == "__main__":
