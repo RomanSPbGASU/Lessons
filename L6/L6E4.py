@@ -1,11 +1,16 @@
 class Stack(list):
+    def __init__(self):
+        super().__init__()
+        self.pop_count = 0
+
     def append(self, obj):
         super().append(obj)
         print(len(self), ": ", obj)
 
     def pop(self, index=-1):
+        self.pop_count += 1
         try:
-            print(len(self), ": ", super().pop(index))
+            print(self.pop_count, ": ", super().pop(index))
         except IndexError:
             print("Ошибка. Стек пуст")
 
