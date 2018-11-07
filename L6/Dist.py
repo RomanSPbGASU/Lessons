@@ -88,3 +88,29 @@ class Dist:
 
     def __int__(self):
         return int(self.meters + self.centimeters / 100.)
+
+
+class LongDist(Dist):
+    def __init__(self, km, mt, ct):
+        super().__init__(mt, ct)
+        self.kilometers = km
+
+    def __add__(self, other):
+        res = super(LongDist, self).__add__(other)
+        res.kilometers = self.kilometers + other.kilometers
+
+        return res
+
+    def get_dist(self):
+        self.centimeters = int(input("Введите число метров: "))
+        self.meters = int(input("Введите число сантиметров: "))
+
+
+if __name__ == "__main__":
+    a = LongDist(25, 25, 11)
+    b = LongDist(50, 50, 22)
+    print(repr(a))
+    # b.get_dist()
+    c = a + b
+    print(c)
+    print(type(c))
