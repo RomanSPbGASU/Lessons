@@ -1,4 +1,4 @@
-class Stack(list):
+class Queue(list):
     def __init__(self):
         super().__init__()
         self.pop_count = 0
@@ -17,7 +17,7 @@ class Stack(list):
 
 if __name__ == "__main__":
     print("Помещяем в очередь...")
-    queue = Stack()
+    queue = Queue()
     queue.push(11)
     queue.push(22)
     queue.push(33)
