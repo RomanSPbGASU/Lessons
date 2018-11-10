@@ -12,9 +12,6 @@ class LinkList:
             res += str(value) + " / "
         return res
 
-    def __next__(self):
-        raise NotImplementedError("Необходимо переопределить метод")
-
     def __iter__(self):
         current = self.first
         for i in range(self.length):
@@ -38,12 +35,6 @@ class LinkList:
             raise NotImplementedError()
         else:
             return self.__get_node(index).value
-
-    def __setitem__(self, key, value):
-        ...
-
-    def __delitem__(self):
-        ...
 
     def __len__(self):
         return self.length
