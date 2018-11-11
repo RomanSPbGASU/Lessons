@@ -39,14 +39,18 @@ if __name__ == "__main__":
     print(second_arr, end="")
     res_arr = IOList()
     terms = [*first_arr, *second_arr]
-    sums = list(map(lambda a, b: a + b, *terms))
-    diffs = list(map(lambda a, b: a - b, *terms))
-    prods = list(map(lambda a, b: a * b, *terms))
+
+    def do_arithmetic(operator, term_arrays):
+        return list(map(lambda a, b: operator(a, b), *term_arrays))
+
+    sums = do_arithmetic(int.__add__, terms)
+    diffs = do_arithmetic(int.__sub__, terms)
+    prods = do_arithmetic(int.__mul__, terms)
     res_arr.extend([sums, diffs, prods])
     print("Результирующий массив")
     print(res_arr)
     res_arr.write(res_name)
-    print("Результирующий массив записан в файл", res_name, end="\n")
+    print("Результирующий массив записан в файл", res_name, end="\n\n")
     res_arr.read(res_name)
     print("Результирующий массив считан из файла", res_name)
     print(res_arr)
