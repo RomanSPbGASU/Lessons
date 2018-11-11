@@ -4,7 +4,7 @@ class IOList(list):
         self.clear()
         with open(file_name) as file:
             for line in file.readlines():
-                self.append(list(map(lambda item: int(item), line.split(" "))))
+                self.append(list(map(int, line.split(" "))))
 
     def write(self, file_name):
         with open(file_name, "w") as file:
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     terms = [*first_arr, *second_arr]
 
     def do_arithmetic(operator, term_arrays):
-        return list(map(lambda a, b: operator(a, b), *term_arrays))
+        return list(map(operator, *term_arrays))
 
     sums = do_arithmetic(int.__add__, terms)
     diffs = do_arithmetic(int.__sub__, terms)
