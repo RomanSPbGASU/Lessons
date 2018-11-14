@@ -412,7 +412,7 @@ class Cutter:
         width = marked.size[0]
         height = marked.size[1]
 
-        borders = {} # {region_number: (up, right, bottom, left), ...}
+        borders = {}  # {region_number: (up, right, bottom, left), ...}
         region_number = 0
         for i in range(height):
             for j in range(width):
@@ -436,10 +436,6 @@ class Cutter:
                         # если к разным, то объединить в один
                         #
                         # проверять, не является ли текущая точка крайней
-
-
-
-
 
 
 class Region:
