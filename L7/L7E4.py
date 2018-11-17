@@ -10,18 +10,15 @@ if __name__ == "__main__":
     data = []
     regexp = re.compile(
         r"Сокращенное фирменное наименование кредитной организации\n"
-        "(?P<name>[^0-9]+)$/*^Почтовый адрес\n(?P<address>\d{6}[.,;\s][\s\t]?"
-        "[А-Я]?[а-я]+[.,;\s][\s\t]?(ул[.]?|улица)[\s\t]?[А-Яа-я0-9_\-]"
-        "[.,;\s][\s\t]?(д[.]?|дом)[\s\t]\d+[.,;\s]((кор[.]|к[.]|стр[.])"
-        "[\s\t]\d+)?).*Телефон[:\s\t](?P<phone>[0-9+][0-9\-()]*[0-9])", re.S)
+        "(?P<name>[^0-9]+)\n.*\nПочтовый адрес\n"
+        "(?P<address>\d{6}[.,;\s]\s?[А-Я]?[а-я]+[.,;\s]\s?(ул[.]?|улица)\s?"
+        "[А-Я][А-Яа-я0-9_\-\s]*[.,;\s]\s?(д[.\s]?|дом\s?)\d+[.,;\s]\s?"
+        "((кор[.]?|к[.]?|стр[.]?)\s?\d+)?).*\nТелефон[:\s]+"
+        "(?P<phone>[0-9+][0-9\-()]*[0-9])", re.S)
     for file_name in file_names:
         with open(file_name, encoding="1251") as file:
             match = regexp.search(file.read())
-            print(match.group("name", "address", "phone"))
-
-
-
-
+        print(match.group("name", "address", "phone"))
 
         print("Информация из файла", file_name, "считана")
 
