@@ -19,7 +19,7 @@ if __name__ == "__main__":
         with open(file_name, encoding="1251") as file:
             match = regexp.search(file.read())
         try:
-            print(match.group("name", "address", "phone"))
+            data.append(match.group("name", "address", "phone"))
         except AttributeError:
             print("Информация в файле", file_name, "не распознана")
         else:
@@ -27,10 +27,9 @@ if __name__ == "__main__":
 
     print("\nСправочная информация по банкам:\n")
 
-    for bank in data:
+    for several_bank in data:
+        name, address, phone = several_bank
+        res = name + "\nАдрес: " + address + "\nТелефон: " + phone + "\n"
         with open(banks_info, "a") as file:
-            file.writelines(bank)
-            file.write("\n")
-        for line in bank:
-            print(line, end="")
-        print()
+            file.write(res)
+        print(res, end="")
