@@ -23,6 +23,8 @@ class SortingTabWidget(Frame):
         self.in_text.config(yscrollcommand=self.in_text_scroll.set)
         self.__del_info_id = self.in_text.bind("<FocusIn>",
                                                self.__in_text_del_info)
+        self.generate_on_change(self.in_text)
+        self.in_text.bind("<<Change>>", self.in_text_on_change)
 
         self.out_text = Text(self, state=NORMAL, height=3)
         self.out_text.insert(0.0, "Результат")
@@ -33,11 +35,41 @@ class SortingTabWidget(Frame):
         self.out_text.config(yscrollcommand=self.out_text_scroll.set)
 
     def __in_text_del_info(self, event):
+        """
+        Удаляет текст из поля ввода.
+
+        Отрабатывает только один раз в течении жизни окна
+        """
         self.in_text.delete(0.0, END)
         self.in_text.unbind("<FocusIn>", self.__del_info_id)
 
-    def sort(self, event):
-        ...
+    def generate_on_change(self, obj):
+        """
+        Генерация события <<Change>> для obj
+        """
+        obj.tk.eval('''
+            proc widget_proxy {widget widget_command args} {
+
+                # call the real tk widget command with the real args
+                set result [uplevel [linsert $args 0 $widget_command]]
+
+                # generate the event for certain types of commands
+                if {([lindex $args 0] in {insert replace delete})} {
+
+                    event generate  $widget <<Change>> -when tail
+                }
+
+                # return the result from the real widget command
+                return $result
+            }
+            ''')
+        obj.tk.eval('''
+            rename {widget} _{widget}
+            interp alias {{}} ::{widget} {{}} widget_proxy {widget} _{widget}
+        '''.format(widget=str(obj)))
+
+    def in_text_on_change(self, event):
+        values = self.in_text.get(0.0, END).split()
 
     def sort_up(self):
         # numbers = str.split(self.unsorted_entry.cget("text"), " ")
