@@ -5,6 +5,7 @@ class RainbowWindow(Tk):
     def __init__(self):
         super().__init__()
         self.title("Rainbow colors")
+        self.resizable(0, 0)
         self.color_label = Label(self, text="Tap any button ↓",
                                  font=("Arial", 16, "bold"), height=3)
         self.color_label.grid(row=1, columnspan=7)
