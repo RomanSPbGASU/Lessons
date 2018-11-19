@@ -4,7 +4,7 @@ import random as rnd
 
 
 class SortingTabWidget(Frame):
-    def __init__(self, master, tab_name="", sort_func=list.sort, *args,
+    def __init__(self, master, tab_name="", sort_func=None, *args,
                  **kwargs):
         Frame.__init__(self, master, *args, **kwargs)
         self.name = tab_name
@@ -16,7 +16,7 @@ class SortingTabWidget(Frame):
         self.sort = sort_func
 
         self.in_text = Text(self, height=3)
-        self.in_text.insert(0.0, "Вводите числа сюда. Например: 10 30.2 15")
+        self.in_text.insert(0.0, "Вводите данные. Например: аб я 10 30.2 15")
         self.in_text.grid(row=0, column=0, sticky=NSEW)
         self.in_text_scroll = Scrollbar(self, command=self.in_text.yview)
         self.in_text_scroll.grid(row=0, column=1, sticky=NSEW)
@@ -27,7 +27,7 @@ class SortingTabWidget(Frame):
         self.in_text.bind("<<Change>>", self.in_text_on_change)
 
         self.out_text = Text(self, state=NORMAL, height=3)
-        self.out_text.insert(0.0, "Результат")
+        self.out_text.insert(0.0, "Результат: 10 15 30.2 аб я")
         self.out_text.config(state=DISABLED)
         self.out_text.grid(row=1, column=0, sticky=NSEW)
         self.out_text_scroll = Scrollbar(self, command=self.out_text.yview)
@@ -43,7 +43,8 @@ class SortingTabWidget(Frame):
         self.in_text.delete(0.0, END)
         self.in_text.unbind("<FocusIn>", self.__del_info_id)
 
-    def generate_on_change(self, obj):
+    @staticmethod
+    def generate_on_change(obj):
         """
         Генерация события <<Change>> для obj
         """
@@ -70,15 +71,29 @@ class SortingTabWidget(Frame):
 
     def in_text_on_change(self, event):
         values = self.in_text.get(0.0, END).split()
+        values = self.sort(values)
+        self.out_text.config(state=NORMAL)
+        self.out_text.delete(0.0, END)
+        self.out_text.insert(0.0, " ".join(values))
+        self.out_text.config(state=DISABLED)
 
-    def sort_up(self):
-        # numbers = str.split(self.unsorted_entry.cget("text"), " ")
-        # numbers.sort()
-        # self.sorted_label = " ".join(numbers)
-        ...
+    @staticmethod
+    def sort_up(iterable):
+        numbers = []
+        strings = []
+        for value in iterable:
+            try:
+                numbers.append(int(value))
+            except ValueError:
+                try:
+                    numbers.append(float(value))
+                except ValueError:
+                    strings.append(value)
+        return [str(val) for val in sorted(numbers)] + sorted(strings)
 
-    def sort_down(self):
-        ...
+    @staticmethod
+    def sort_down(input_val):
+        return input_val[-1]
 
     def randomize(self):
         ...
@@ -115,7 +130,8 @@ class SortingBookWindow(Tk):
         self.checkbutton_frame.grid(row=0, column=0, sticky="ne")
 
         self.scroll_synchronized = Checkbutton(self.checkbutton_frame,
-                                               text="Синхр. прокрутку")
+                                               text="Синхр. прокрутку",
+                                               state=DISABLED)
         self.scroll_synchronized.grid(row=0, column=0)
 
         self.combined_input = Checkbutton(self.checkbutton_frame,
