@@ -71,7 +71,7 @@ class SortingTabWidget(Frame):
 
     def in_text_on_change(self, event):
         values = self.in_text.get(0.0, END).split()
-        values = self.sort(self, values)
+        values = self.sort(values)
         self.out_text.config(state=NORMAL)
         self.out_text.delete(0.0, END)
         self.out_text.insert(0.0, " ".join(values))
@@ -92,14 +92,19 @@ class SortingTabWidget(Frame):
         sorted_as_nums = [str(val) for val in sorted(numbers, reverse=reverse)]
         return sorted_as_nums + sorted(strings, reverse=reverse)
 
-    def sort_up(self, iterable):
-        return self.segregated_sort(iterable, False)
+    @staticmethod
+    def sort_up(iterable):
+        return SortingTabWidget.segregated_sort(iterable, False)
 
-    def sort_down(self, iterable):
-        return self.segregated_sort(iterable, True)
+    @staticmethod
+    def sort_down(iterable):
+        return SortingTabWidget.segregated_sort(iterable, True)
 
-    def randomize(self, iterable):
-        ...
+    @staticmethod
+    def randomize(iterable):
+        values = list(iterable)
+        rnd.shuffle(values)
+        return values
 
 
 class SortingBookWindow(Tk):
