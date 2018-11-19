@@ -71,14 +71,14 @@ class SortingTabWidget(Frame):
 
     def in_text_on_change(self, event):
         values = self.in_text.get(0.0, END).split()
-        values = self.sort(values)
+        values = self.sort(self, values)
         self.out_text.config(state=NORMAL)
         self.out_text.delete(0.0, END)
         self.out_text.insert(0.0, " ".join(values))
         self.out_text.config(state=DISABLED)
 
     @staticmethod
-    def sort_up(iterable):
+    def segregated_sort(iterable, reverse=False):
         numbers = []
         strings = []
         for value in iterable:
@@ -89,13 +89,16 @@ class SortingTabWidget(Frame):
                     numbers.append(float(value))
                 except ValueError:
                     strings.append(value)
-        return [str(val) for val in sorted(numbers)] + sorted(strings)
+        sorted_as_nums = [str(val) for val in sorted(numbers, reverse=reverse)]
+        return sorted_as_nums + sorted(strings, reverse=reverse)
 
-    @staticmethod
-    def sort_down(input_val):
-        return input_val[-1]
+    def sort_up(self, iterable):
+        return self.segregated_sort(iterable, False)
 
-    def randomize(self):
+    def sort_down(self, iterable):
+        return self.segregated_sort(iterable, True)
+
+    def randomize(self, iterable):
         ...
 
 
