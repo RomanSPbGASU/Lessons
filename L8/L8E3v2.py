@@ -8,7 +8,6 @@ class SortingTabWidget(Frame):
                  **kwargs):
         Frame.__init__(self, master, *args, **kwargs)
         self.name = tab_name
-        # self.configure(pady=5)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -17,11 +16,13 @@ class SortingTabWidget(Frame):
         self.sort = sort_func
 
         self.in_text = Text(self, height=3)
-        self.in_text.insert(0.0, "Введите текст сюда")
+        self.in_text.insert(0.0, "Вводите числа сюда. Например: 10 30.2 15")
         self.in_text.grid(row=0, column=0, sticky=NSEW)
         self.in_text_scroll = Scrollbar(self, command=self.in_text.yview)
         self.in_text_scroll.grid(row=0, column=1, sticky=NSEW)
         self.in_text.config(yscrollcommand=self.in_text_scroll.set)
+        self.__del_info_id = self.in_text.bind("<FocusIn>",
+                                               self.__in_text_del_info)
 
         self.out_text = Text(self, state=NORMAL, height=3)
         self.out_text.insert(0.0, "Результат")
@@ -30,6 +31,13 @@ class SortingTabWidget(Frame):
         self.out_text_scroll = Scrollbar(self, command=self.out_text.yview)
         self.out_text_scroll.grid(row=1, column=1, sticky="nse")
         self.out_text.config(yscrollcommand=self.out_text_scroll.set)
+
+    def __in_text_del_info(self, event):
+        self.in_text.delete(0.0, END)
+        self.in_text.unbind("<FocusIn>", self.__del_info_id)
+
+    def sort(self, event):
+        ...
 
     def sort_up(self):
         # numbers = str.split(self.unsorted_entry.cget("text"), " ")
