@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 import random as rnd
 
 
@@ -142,12 +143,30 @@ class SortingBookWindow(Tk):
                                                state=DISABLED)
         self.scroll_synchronized.grid(row=0, column=0)
 
+        self.is_combined = BooleanVar()
         self.combined_input = Checkbutton(self.checkbutton_frame,
-                                          text="Объединить ввод")
+                                          text="Объединить ввод",
+                                          variable=self.is_combined,
+                                          onvalue=True, offvalue=False,
+                                          command=self.__change_combined)
         self.combined_input.grid(row=0, column=1)
 
     def show(self):
         self.mainloop()
+
+    def __change_combined(self):
+        if self.is_combined.get():
+            not_empty = False
+            for w in self.sorting_widgets.values():
+                if self.notebook.tab(self.notebook.select(), "text") != w.name:
+                    s = w.in_text.get(0.0, END) != "\n"
+                    not_empty |= bool(w.in_text.get(0.0, END) != "\n")
+            if not_empty:
+                messagebox.showinfo("Возможна потеря данных",
+                                    "При объединении полей ввода, "
+                                    "информация из полей ввода на "
+                                    "неактивных вкладках будет потеряна",
+                                    type="okcancel")
 
 
 if __name__ == "__main__":
