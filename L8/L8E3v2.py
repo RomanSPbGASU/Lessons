@@ -16,6 +16,7 @@ class SortingTabWidget(Frame):
 
         self.sort = sort_func
 
+        # TODO: выделить создание поля ввода в синглтон
         self.in_text = Text(self, height=3)
         self.in_text.insert(0.0, "Вводите данные. Например: аб я 10 30.2 15")
         self.in_text.grid(row=0, column=0, sticky=NSEW)
@@ -156,17 +157,29 @@ class SortingBookWindow(Tk):
 
     def __change_combined(self):
         if self.is_combined.get():
+            ans = False
             not_empty = False
             for w in self.sorting_widgets.values():
                 if self.notebook.tab(self.notebook.select(), "text") != w.name:
                     s = w.in_text.get(0.0, END) != "\n"
                     not_empty |= bool(w.in_text.get(0.0, END) != "\n")
             if not_empty:
-                messagebox.showinfo("Возможна потеря данных",
-                                    "При объединении полей ввода, "
-                                    "информация из полей ввода на "
-                                    "неактивных вкладках будет потеряна",
-                                    type="okcancel")
+                ans = messagebox.showinfo("Возможна потеря данных",
+                                          "При объединении полей ввода, "
+                                          "информация из полей ввода на "
+                                          "неактивных вкладках будет потеряна",
+                                          type="okcancel")
+            if ans or not not_empty:
+                s_name = self.notebook.tab(self.notebook.select(), "text")
+                s_widget = self.sorting_widgets[s_name]
+                for w in self.sorting_widgets.values():
+                    if s_name != w.name:
+                        w.in_text.delete(0.0, END)
+                        w.in_text.insert(0.0, s_widget.in_text.get(0.0, END))
+                        s_widget.in_text.bind("<<Change>>", w.in_text_on_change)
+
+        else:
+            ...
 
 
 if __name__ == "__main__":
