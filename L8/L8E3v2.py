@@ -16,7 +16,6 @@ class SortingTabWidget(Frame):
 
         self.sort = sort_func
 
-        # TODO: выделить создание поля ввода в синглтон
         self.in_text = Text(self, height=3)
         self.in_text.insert(0.0, "Вводите данные. Например: аб я 10 30.2 15")
         self.in_text.grid(row=0, column=0, sticky=NSEW)
@@ -149,7 +148,8 @@ class SortingBookWindow(Tk):
                                           text="Объединить ввод",
                                           variable=self.is_combined,
                                           onvalue=True, offvalue=False,
-                                          command=self.__change_combined)
+                                          command=self.__change_combined,
+                                          state=DISABLED)
         self.combined_input.grid(row=0, column=1)
 
     def show(self):
