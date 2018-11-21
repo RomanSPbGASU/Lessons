@@ -78,6 +78,10 @@ class SortingTabWidget(Frame):
         self.out_text.insert(0.0, " ".join(values))
         self.out_text.config(state=DISABLED)
 
+    def in_text_on_sync(self, event, value):
+        self.in_text.delete(0.0, END)
+        self.in_text.insert(0.0, value)
+
     @staticmethod
     def segregated_sort(iterable, reverse=False):
         numbers = []
@@ -149,7 +153,7 @@ class SortingBookWindow(Tk):
                                           variable=self.is_combined,
                                           onvalue=True, offvalue=False,
                                           command=self.__change_combined,
-                                          state=DISABLED)
+                                          state=NORMAL)
         self.combined_input.grid(row=0, column=1)
 
     def show(self):
@@ -161,7 +165,6 @@ class SortingBookWindow(Tk):
             not_empty = False
             for w in self.sorting_widgets.values():
                 if self.notebook.tab(self.notebook.select(), "text") != w.name:
-                    s = w.in_text.get(0.0, END) != "\n"
                     not_empty |= bool(w.in_text.get(0.0, END) != "\n")
             if not_empty:
                 ans = messagebox.showinfo("Возможна потеря данных",
@@ -172,11 +175,39 @@ class SortingBookWindow(Tk):
             if ans or not not_empty:
                 s_name = self.notebook.tab(self.notebook.select(), "text")
                 s_widget = self.sorting_widgets[s_name]
-                for w in self.sorting_widgets.values():
-                    if s_name != w.name:
-                        w.in_text.delete(0.0, END)
-                        w.in_text.insert(0.0, s_widget.in_text.get(0.0, END))
-                        s_widget.in_text.bind("<<Change>>", w.in_text_on_change)
+                for name, w in self.sorting_widgets.items():
+                    if s_name != name:
+                        s_text = s_widget.in_text
+                        w_text = w.in_text
+                        s_val = s_text.get(0.0, END)
+                        w_val = w_text.get(0.0, END)
+                        ch_id = s_text.bind("<<Change>>",
+                                            lambda event="<<Change>>",
+                                            val=s_val:
+                                            w.in_text_on_sync(event, val))
+                        w_text.bind("<FocusIn>",
+                                    s_text.unbind("<<Change>>", ch_id))
+                        w_text.bind("<FocusIn>",
+                                    w_text.bind("<<Change>>",
+                                                lambda event="<<Change>>",
+                                                val=w_val:
+                                                s_widget.in_text_on_sync(
+                                                    event, val)))
+
+                # for current_key, current in self.sorting_widgets.items():
+                #     for key, widget in self.sorting_widgets.items():
+                #         if current_key != key:
+                #             cur_val = current.in_text.get(0.0, END)
+                #             current.in_text.bind("<<Change>>", lambda event="<<Change>>", val=cur_val: widget.in_text_on_sync(event, val))
+                #                 current.in_text.bind("<FocusIn>", lambda event="<FocusIn>", val=cur_val: widget.in_text_on_sync(event, val))
+
+                # s_name = self.notebook.tab(self.notebook.select(), "text")
+                # s_widget = self.sorting_widgets[s_name]
+                # for w in self.sorting_widgets.values():
+                #     if s_name != w.name:
+                #         w.in_text.delete(0.0, END)
+                #         w.in_text.insert(0.0, s_widget.in_text.get(0.0, END))
+                #         s_widget.in_text.bind("<<Change>>", w.in_text_on_change)
 
         else:
             ...
