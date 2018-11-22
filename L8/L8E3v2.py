@@ -142,9 +142,7 @@ class SortingBookWindow(Tk):
             def __in_text_on_change(event):
                 current_tab = self.notebook.tab(self.notebook.select(), "text")
                 s_widget = self.sorting_widgets[current_tab]
-                name = s_widget.name
-                get = s_widget.in_text.get(0.0, END)
-                self.input = s_widget.in_text.get(0.0, END)
+                self.input = s_widget.in_text.get(0.0, END)[:-1]
 
             def __in_text_on_focus_in(event):
                 if self.is_combined.get():
