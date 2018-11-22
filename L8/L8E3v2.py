@@ -144,7 +144,6 @@ class SortingBookWindow(Tk):
             tab.in_text.bind("<<Change>>", __in_text_on_change, "+")
             tab.in_text.bind("<FocusIn>", __in_text_on_focus_in, "+")
 
-
         # faq
         initial_tab_name = self.notebook.tab(self.notebook.select(), "text")
         initial_tab = self.sorting_widgets[initial_tab_name]
@@ -191,21 +190,21 @@ class SortingBookWindow(Tk):
         self.mainloop()
 
     def __change_combined(self):
-        ...
-        # if self.is_combined.get():
-        #     ans = False
-        #     not_empty = False
-        #     for w in self.sorting_widgets.values():
-        #         if self.notebook.tab(self.notebook.select(), "text") != w.name:
-        #             not_empty |= bool(w.in_text.get(0.0, END) != "\n")
-        #     if not_empty:
-        #         ans = messagebox.showinfo("Возможна потеря данных",
-        #                                   "При объединении полей ввода, "
-        #                                   "информация из полей ввода на "
-        #                                   "неактивных вкладках будет потеряна",
-        #                                   type="okcancel")
-        #     if ans or not not_empty:
-        #         ...
+        if self.is_combined.get():
+            ans = False
+            not_empty = False
+            for w in self.sorting_widgets.values():
+                if self.notebook.tab(self.notebook.select(), "text") != w.name:
+                    not_empty |= bool(w.in_text.get(0.0, END) != "\n")
+            if not_empty:
+                ans = messagebox.showinfo("Возможна потеря данных",
+                                          "При объединении полей ввода, "
+                                          "информация из полей ввода на "
+                                          "неактивных вкладках будет потеряна",
+                                          type="okcancel")
+            if ans == "cancel":
+                self.is_combined.set(False)
+
 
 if __name__ == "__main__":
     sorting_window = SortingBookWindow()
