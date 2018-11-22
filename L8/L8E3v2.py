@@ -8,6 +8,7 @@ class SortingTabWidget(Frame):
     def __init__(self, master, tab_name="", sort_func=None, *args,
                  **kwargs):
         Frame.__init__(self, master, *args, **kwargs)
+        # main frame
         self.name = tab_name
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -16,6 +17,7 @@ class SortingTabWidget(Frame):
 
         self.sort = sort_func
 
+        # input widget
         self.in_text = Text(self, height=3)
         self.in_text.grid(row=0, column=0, sticky=NSEW)
         self.in_text_scroll = Scrollbar(self, command=self.in_text.yview)
@@ -26,6 +28,7 @@ class SortingTabWidget(Frame):
         self.generate_on_change(self.in_text)
         self.in_text.bind("<<Change>>", self.in_text_on_change)
 
+        # output widget
         self.out_text = Text(self, state=NORMAL, height=3)
         self.out_text.config(state=DISABLED)
         self.out_text.grid(row=1, column=0, sticky=NSEW)
@@ -134,6 +137,9 @@ class SortingBookWindow(Tk):
             tab = SortingTabWidget(self.notebook, name, sort_functions[i])
             self.notebook.add(tab, text=tab.name)
             self.sorting_widgets[name] = tab
+            if self.is_combined.get():
+                ...
+                # TODO: написать здесь события подписки на фокус для синхр.
 
         # faq
         initial_tab_name = self.notebook.tab(self.notebook.select(), "text")
@@ -153,7 +159,7 @@ class SortingBookWindow(Tk):
         focus_in_id = initial_tab.in_text.bind("<FocusIn>",
                                                __clear_and_unbind_focus)
         tab_focus_out_id = initial_tab.bind("<FocusOut>",
-                                        __clear_and_unbind_focus)
+                                            __clear_and_unbind_focus)
 
         # options
         self.checkbutton_frame = Frame(self, background="#e00")
