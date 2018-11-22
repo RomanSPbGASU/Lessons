@@ -26,7 +26,7 @@ class SortingTabWidget(Frame):
         self.__on_focus_id = self.in_text.bind("<FocusIn>",
                                                self.__in_text_on_focus)
         self.generate_on_change(self.in_text)
-        self.in_text.bind("<<Change>>", self.in_text_on_change)
+        self.in_text.bind("<<Change>>", self.in_text_on_change, add="+")
 
         # output widget
         self.out_text = Text(self, state=NORMAL, height=3)
@@ -123,6 +123,7 @@ class SortingBookWindow(Tk):
         current_theme = style.theme_use()
         style.theme_settings(current_theme, {
             "TNotebook.Tab": {"configure": {"padding": [0, 1.5]}}})
+        self.input = "fff"
 
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(row=0, column=0, sticky=NSEW)
@@ -137,9 +138,25 @@ class SortingBookWindow(Tk):
             tab = SortingTabWidget(self.notebook, name, sort_functions[i])
             self.notebook.add(tab, text=tab.name)
             self.sorting_widgets[name] = tab
-            if self.is_combined.get():
-                ...
-                # TODO: написать здесь события подписки на фокус для синхр.
+
+            def __in_text_on_change(event):
+                current_tab = self.notebook.tab(self.notebook.select(), "text")
+                s_widget = self.sorting_widgets[current_tab]
+                name = s_widget.name
+                get = s_widget.in_text.get(0.0, END)
+                self.input = s_widget.in_text.get(0.0, END)
+
+            def __in_text_on_focus_in(event):
+                if self.is_combined.get():
+                    current_tab = self.notebook.tab(self.notebook.select(),
+                                                    "text")
+                    s_widget = self.sorting_widgets[current_tab]
+                    s_widget.in_text.delete(0.0, END)
+                    s_widget.in_text.insert(0.0, self.input)
+
+            tab.in_text.bind("<<Change>>", __in_text_on_change, "+")
+            tab.in_text.bind("<FocusIn>", __in_text_on_focus_in, "+")
+
 
         # faq
         initial_tab_name = self.notebook.tab(self.notebook.select(), "text")
@@ -157,9 +174,9 @@ class SortingBookWindow(Tk):
             initial_tab.out_text.delete(0.0, END)
 
         focus_in_id = initial_tab.in_text.bind("<FocusIn>",
-                                               __clear_and_unbind_focus)
+                                               __clear_and_unbind_focus, "+")
         tab_focus_out_id = initial_tab.bind("<FocusOut>",
-                                            __clear_and_unbind_focus)
+                                            __clear_and_unbind_focus, "+")
 
         # options
         self.checkbutton_frame = Frame(self, background="#e00")
@@ -185,58 +202,21 @@ class SortingBookWindow(Tk):
         self.mainloop()
 
     def __change_combined(self):
-        if self.is_combined.get():
-            ans = False
-            not_empty = False
-            for w in self.sorting_widgets.values():
-                if self.notebook.tab(self.notebook.select(), "text") != w.name:
-                    not_empty |= bool(w.in_text.get(0.0, END) != "\n")
-            if not_empty:
-                ans = messagebox.showinfo("Возможна потеря данных",
-                                          "При объединении полей ввода, "
-                                          "информация из полей ввода на "
-                                          "неактивных вкладках будет потеряна",
-                                          type="okcancel")
-            if ans or not not_empty:
-                s_name = self.notebook.tab(self.notebook.select(), "text")
-                s_widget = self.sorting_widgets[s_name]
-                for name, w in self.sorting_widgets.items():
-                    if s_name != name:
-                        s_text = s_widget.in_text
-                        w_text = w.in_text
-                        s_val = s_text.get(0.0, END)
-                        w_val = w_text.get(0.0, END)
-                        ch_id = s_text.bind("<<Change>>",
-                                            lambda event="<<Change>>",
-                                                   val=s_val:
-                                            w.in_text_on_sync(event, val))
-                        w_text.bind("<FocusIn>",
-                                    s_text.unbind("<<Change>>", ch_id))
-                        w_text.bind("<FocusIn>",
-                                    w_text.bind("<<Change>>",
-                                                lambda event="<<Change>>",
-                                                       val=w_val:
-                                                s_widget.in_text_on_sync(
-                                                    event, val)))
-
-                # for current_key, current in self.sorting_widgets.items():
-                #     for key, widget in self.sorting_widgets.items():
-                #         if current_key != key:
-                #             cur_val = current.in_text.get(0.0, END)
-                #             current.in_text.bind("<<Change>>", lambda event="<<Change>>", val=cur_val: widget.in_text_on_sync(event, val))
-                #                 current.in_text.bind("<FocusIn>", lambda event="<FocusIn>", val=cur_val: widget.in_text_on_sync(event, val))
-
-                # s_name = self.notebook.tab(self.notebook.select(), "text")
-                # s_widget = self.sorting_widgets[s_name]
-                # for w in self.sorting_widgets.values():
-                #     if s_name != w.name:
-                #         w.in_text.delete(0.0, END)
-                #         w.in_text.insert(0.0, s_widget.in_text.get(0.0, END))
-                #         s_widget.in_text.bind("<<Change>>", w.in_text_on_change)
-
-        else:
-            ...
-
+        ...
+        # if self.is_combined.get():
+        #     ans = False
+        #     not_empty = False
+        #     for w in self.sorting_widgets.values():
+        #         if self.notebook.tab(self.notebook.select(), "text") != w.name:
+        #             not_empty |= bool(w.in_text.get(0.0, END) != "\n")
+        #     if not_empty:
+        #         ans = messagebox.showinfo("Возможна потеря данных",
+        #                                   "При объединении полей ввода, "
+        #                                   "информация из полей ввода на "
+        #                                   "неактивных вкладках будет потеряна",
+        #                                   type="okcancel")
+        #     if ans or not not_empty:
+        #         ...
 
 if __name__ == "__main__":
     sorting_window = SortingBookWindow()
