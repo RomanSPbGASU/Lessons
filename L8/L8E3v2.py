@@ -23,8 +23,6 @@ class SortingTabWidget(Frame):
         self.in_text_scroll = Scrollbar(self, command=self.in_text.yview)
         self.in_text_scroll.grid(row=0, column=1, sticky=NSEW)
         self.in_text.config(yscrollcommand=self.in_text_scroll.set)
-        self.__on_focus_id = self.in_text.bind("<FocusIn>",
-                                               self.__in_text_on_focus)
         self.generate_on_change(self.in_text)
         self.in_text.bind("<<Change>>", self.in_text_on_change, add="+")
 
@@ -35,11 +33,6 @@ class SortingTabWidget(Frame):
         self.out_text_scroll = Scrollbar(self, command=self.out_text.yview)
         self.out_text_scroll.grid(row=1, column=1, sticky="nse")
         self.out_text.config(yscrollcommand=self.out_text_scroll.set)
-
-    def __in_text_on_focus(self, event):
-        ...
-        # self.in_text.delete(0.0, END)
-        # self.in_text.unbind("<FocusIn>", self.__on_focus_id)
 
     @staticmethod
     def generate_on_change(obj):
@@ -74,10 +67,6 @@ class SortingTabWidget(Frame):
         self.out_text.delete(0.0, END)
         self.out_text.insert(0.0, " ".join(values))
         self.out_text.config(state=DISABLED)
-
-    def in_text_on_sync(self, event, value):
-        self.in_text.delete(0.0, END)
-        self.in_text.insert(0.0, value)
 
     @staticmethod
     def segregated_sort(iterable, reverse=False):
@@ -157,24 +146,26 @@ class SortingBookWindow(Tk):
 
 
         # faq
-        # initial_tab_name = self.notebook.tab(self.notebook.select(), "text")
-        # initial_tab = self.sorting_widgets[initial_tab_name]
-        # initial_tab.in_text.insert(0.0,
-        #                            "Вводите данные. Например: аб я 10 30.2 15")
-        # initial_tab.out_text.config(state=NORMAL)
-        # initial_tab.out_text.insert(0.0, "Результат: 10 15 30.2 аб я")
-        # initial_tab.out_text.config(state=DISABLED)
-        #
-        # def __clear_and_unbind_focus(event):
-        #     initial_tab.in_text.unbind("<FocusIn>", focus_in_id)
-        #     initial_tab.unbind("<FocusOut>", tab_focus_out_id)
-        #     initial_tab.in_text.delete(0.0, END)
-        #     initial_tab.out_text.delete(0.0, END)
-        #
-        # focus_in_id = initial_tab.in_text.bind("<FocusIn>",
-        #                                        __clear_and_unbind_focus, "+")
-        # tab_focus_out_id = initial_tab.bind("<FocusOut>",
-        #                                     __clear_and_unbind_focus, "+")
+        initial_tab_name = self.notebook.tab(self.notebook.select(), "text")
+        initial_tab = self.sorting_widgets[initial_tab_name]
+        initial_tab.in_text.insert(0.0,
+                                   "Вводите данные. Например: аб я 10 30.2 15")
+        initial_tab.out_text.config(state=NORMAL)
+        initial_tab.out_text.insert(0.0, "Результат: 10 15 30.2 аб я")
+        initial_tab.out_text.config(state=DISABLED)
+
+        def __clear_and_unbind_focus(event):
+            # next line working not correctly: it unbind all events
+            initial_tab.in_text.unbind("<FocusIn>", focus_in_id)
+            initial_tab.in_text.bind("<FocusIn>", __in_text_on_focus_in)
+            initial_tab.unbind("<FocusOut>", tab_focus_out_id)
+            initial_tab.in_text.delete(0.0, END)
+            initial_tab.out_text.delete(0.0, END)
+
+        focus_in_id = initial_tab.in_text.bind("<FocusIn>",
+                                               __clear_and_unbind_focus, "+")
+        tab_focus_out_id = initial_tab.bind("<FocusOut>",
+                                            __clear_and_unbind_focus, "+")
 
         # options
         self.checkbutton_frame = Frame(self, background="#e00")
