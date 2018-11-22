@@ -157,24 +157,24 @@ class SortingBookWindow(Tk):
 
 
         # faq
-        initial_tab_name = self.notebook.tab(self.notebook.select(), "text")
-        initial_tab = self.sorting_widgets[initial_tab_name]
-        initial_tab.in_text.insert(0.0,
-                                   "Вводите данные. Например: аб я 10 30.2 15")
-        initial_tab.out_text.config(state=NORMAL)
-        initial_tab.out_text.insert(0.0, "Результат: 10 15 30.2 аб я")
-        initial_tab.out_text.config(state=DISABLED)
-
-        def __clear_and_unbind_focus(event):
-            initial_tab.in_text.unbind("<FocusIn>", focus_in_id)
-            initial_tab.unbind("<FocusOut>", tab_focus_out_id)
-            initial_tab.in_text.delete(0.0, END)
-            initial_tab.out_text.delete(0.0, END)
-
-        focus_in_id = initial_tab.in_text.bind("<FocusIn>",
-                                               __clear_and_unbind_focus, "+")
-        tab_focus_out_id = initial_tab.bind("<FocusOut>",
-                                            __clear_and_unbind_focus, "+")
+        # initial_tab_name = self.notebook.tab(self.notebook.select(), "text")
+        # initial_tab = self.sorting_widgets[initial_tab_name]
+        # initial_tab.in_text.insert(0.0,
+        #                            "Вводите данные. Например: аб я 10 30.2 15")
+        # initial_tab.out_text.config(state=NORMAL)
+        # initial_tab.out_text.insert(0.0, "Результат: 10 15 30.2 аб я")
+        # initial_tab.out_text.config(state=DISABLED)
+        #
+        # def __clear_and_unbind_focus(event):
+        #     initial_tab.in_text.unbind("<FocusIn>", focus_in_id)
+        #     initial_tab.unbind("<FocusOut>", tab_focus_out_id)
+        #     initial_tab.in_text.delete(0.0, END)
+        #     initial_tab.out_text.delete(0.0, END)
+        #
+        # focus_in_id = initial_tab.in_text.bind("<FocusIn>",
+        #                                        __clear_and_unbind_focus, "+")
+        # tab_focus_out_id = initial_tab.bind("<FocusOut>",
+        #                                     __clear_and_unbind_focus, "+")
 
         # options
         self.checkbutton_frame = Frame(self, background="#e00")
