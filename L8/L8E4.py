@@ -21,6 +21,7 @@ class Adder(Tk):
 
         # output
         self.output_treeview = ttk.Treeview(selectmode=NONE, show="tree",
+                                            text="не отображается",
                                             columns=(1, 2, 3))
         self.output_treeview.heading("#0")
         self.output_treeview.column("#0", width=0)
