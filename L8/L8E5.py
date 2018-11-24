@@ -1,18 +1,20 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
+from tkinter import ttk
 
 
 class ReSaverWindow(Tk):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.title("Просмотр файлов")
+        self.resizable(False, False)
         self.file_name = None
 
         # header (filename)
         Label(self, text="Путь к файлу: ").grid()
         self.file_path_var = StringVar(self, "Укажите файл...")
-        self.file_entry = Entry(self, textvariable=self.file_path_var)
+        self.file_entry = Entry(self, textvariable=self.file_path_var, )
         self.file_entry.bind("<Return>", self.read_file)
         self.__focus_id = self.file_entry.bind("<FocusIn>", self.clear_hint)
         self.file_entry.grid(row=0, column=1)
@@ -21,8 +23,14 @@ class ReSaverWindow(Tk):
         self.browse_btn.grid(row=0, column=2)
 
         # main (content)
-        self.file_content_text = Text(self)
-        self.file_content_text.grid(columnspan=3)
+        self.file_content_frame = Frame()
+        self.file_content_frame.grid(columnspan=3)
+        self.file_content_text = Text(self.file_content_frame)
+        self.file_content_text.grid()
+        self.file_content_scroll = Scrollbar(self.file_content_frame)
+        self.file_content_text["yscrollcommand"] = self.file_content_scroll.set
+        self.file_content_scroll["command"] = self.file_content_text.yview
+        self.file_content_scroll.grid(row=0, column=1, sticky="nes")
 
         # footer (buttons)
         self.clear_btn = Button(self, text="Очистить", command=self.clear_all)
