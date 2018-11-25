@@ -5,6 +5,7 @@ from tkinter import filedialog
 
 class ReSaverWindow(Tk):
     def __init__(self, master=None, *args, **kwargs):
+        # window
         super().__init__(master, *args, **kwargs)
         self.title("Просмотр файлов")
         self.config(background="#eee")
@@ -13,23 +14,27 @@ class ReSaverWindow(Tk):
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.file_name = None
+        self._placeholder = "Укажите файл..."
 
         # header (filename)
-        self.file_path_var = StringVar(self, "Укажите файл...")
+        self.file_path_var = StringVar(self, self.placeholder)
         self.file_entry = Entry(self, textvariable=self.file_path_var,
                                 borderwidth=8, relief="flat", width=20,
                                 foreground="#aaa", font=("Arial", 10, "bold"))
         self.file_entry.bind("<Return>", self.read_file)
         self.file_entry.grid(row=0, column=0, columnspan=3, sticky=NSEW,
                              padx=(20, 0), pady=3)
-        self.fpv_trace_id = self.file_path_var.trace_add(("read", "write"),
-                                                         self.clear_hint)
-        self.fe_focus_id = self.file_entry.bind("<FocusIn>", self.clear_hint,
-                                                "+")
+        self.fe_focus_id = self.file_entry.bind("<FocusIn>",
+                                                self.delete_placeholder)
+        self.fe_out_id = self.file_entry.bind("<FocusOut>",
+                                              self.past_placeholder)
         self.browse_btn = Button(self, text="Выбрать",
                                  font=("Arial", 10, "bold"),
-                                 command=self.browse_file, foreground="#444")
-        self.browse_btn.grid(row=0, column=3, sticky="we", padx=(5, 20), pady=3)
+                                 command=self.browse_file, foreground="#444",
+                                 activebackground="#999",
+                                 activeforeground="#fff")
+        self.browse_btn.grid(row=0, column=3, sticky="we", padx=(5, 20),
+                             pady=3)
 
         # main (content)
         self.file_content_frame = Frame()
@@ -51,22 +56,38 @@ class ReSaverWindow(Tk):
                                foreground="#fff", font=("Arial", 10, "bold"),
                                activebackground="#e33",
                                activeforeground="#eee", highlightcolor="#000")
-        self.save_btn.grid(row=2, column=2, columnspan=2, sticky="w", padx=(0, 20),
+        self.save_btn.grid(row=2, column=2, columnspan=2, sticky="w",
+                           padx=(0, 20),
                            pady=(20, 10), ipadx=30)
 
-    def clear_hint(self, *args):
-        try:
-            if args[2] == "read":
-                self.file_entry.delete(0, END)
-        except IndexError:
-            pass
-        self.file_entry.config(foreground="#000")
-        if self.file_path_var.trace_info():
-            self.file_path_var.trace_remove(("read", "write"),
-                                            self.fpv_trace_id)
-            self.file_entry.unbind("<FocusIn>", self.fe_focus_id)
+    @property
+    def placeholder(self):
+        return "\0" + str(self._placeholder)
+
+    @placeholder.setter
+    def placeholder(self, value):
+        if value[0] == "\0":
+            self._placeholder = value[1:]
+        else:
+            self._placeholder = value
+
+    @placeholder.deleter
+    def placeholder(self):
+        del self._placeholder
+
+    def past_placeholder(self, *args):
+        if not self.file_entry.get():
+            self.file_entry.delete(0, END)
+            self.file_entry.insert(0, self.placeholder)
+            self.file_entry.config(foreground="#aaa")
+
+    def delete_placeholder(self, *args):
+        if self.file_entry.get() == self.placeholder:
+            self.file_entry.delete(0, END)
+            self.file_entry.config(foreground="#000")
 
     def browse_file(self):
+        self.delete_placeholder()
         self.file_path_var.set(filedialog.askopenfilename(
             filetypes=(("All files", "*.*"),
                        ("TXT files", "*.txt"),
@@ -80,14 +101,26 @@ class ReSaverWindow(Tk):
             with open(file_path, encoding="utf-8") as file:
                 self.file_content_text.insert(0.0, file.read())
         except FileNotFoundError:
-            messagebox.showerror("Ошибка", message="Файл не выбран")
+            messagebox.showerror("Ошибка",
+                                 message="Файл " + file_path + " не найден")
+            self.past_placeholder()
         except UnicodeDecodeError:
-            with open(file_path, encoding="1251") as file:
-                self.file_content_text.insert(0.0, file.read())
+            try:
+                with open(file_path, encoding="1251") as file:
+                    self.file_content_text.insert(0.0, file.read())
+            except FileNotFoundError:
+                messagebox.showerror("Ошибка",
+                                     message=
+                                     "Файл " + file_path + " не найден")
+                self.past_placeholder()
 
     def clear_all(self):
-        self.file_entry.delete(0, END)
         self.file_content_text.delete(0.0, END)
+        if self.file_entry.focus_get() != self.file_entry:
+            self.file_entry.delete(0, END)
+            self.past_placeholder()
+        else:
+            self.file_entry.delete(0, END)
 
     def write_file(self, event=None):
         file_path = self.file_path_var.get()
