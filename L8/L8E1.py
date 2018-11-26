@@ -1,40 +1,46 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 
 
+# TODO: написать переход между полями ввода по нажатию Enter ("<Return>")
 class Deposit(Tk):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.title = "Схема начисления процентов"
+        self.resizable(True, False)
+        self.minsize(600, 200)
+        self.grid_columnconfigure(0, weight=0, pad=15)
+        self.grid_columnconfigure(1, weight=0)
+        self.grid_columnconfigure(2, weight=1)
         self.results = []
         self.period_lengths = (1, 3, 6, 12)
 
         # initial
-        self.initial_label = Label(self, text="Начальная сумма, ₽:")
-        self.initial_label.grid()
+        Label(self, text="Начальная сумма, ₽:").grid(sticky=E)
         self.initial_var = DoubleVar()
         self.initial_entry = Entry(self, textvariable=self.initial_var)
-        self.initial_entry.grid(row=0, column=1)
+        self.initial_entry.grid(row=0, column=1, sticky="we")
 
         # rate
-        self.rate_label = Label(self, text="Размер ставки, %:")
-        self.rate_label.grid()
+        Label(self, text="Размер ставки, %:").grid(sticky=E)
         self.rate_var = DoubleVar()
         self.rate_entry = Entry(self, textvariable=self.rate_var)
-        self.rate_entry.grid(row=1, column=1)
+        self.rate_entry.grid(row=1, column=1, sticky="we")
 
         # term
-        self.term_label = Label(self, text="Срок инвестирования, лет:")
-        self.term_label.grid()
+        Label(self, text="Срок инвестирования, лет:").grid(sticky=E)
         self.term_var = DoubleVar()
         self.term_entry = Entry(self, textvariable=self.term_var)
-        self.term_entry.grid(row=2, column=1)
+        self.term_entry.grid(row=2, column=1, sticky="we")
 
         # scheme
         self.scheme_label = Label(self, text="Схема начисления процентов")
         self.scheme_label.grid(columnspan=3)
-        self.scheme_table = ttk.Treeview(self, columns=(1, 2, 3, 4), height=2)
-        self.scheme_table.grid(columnspan=3, ipady=20)
+        self.scheme_table = ttk.Treeview(self, columns=(1, 2, 3, 4), height=2,
+                                         takefocus=FALSE)
+        self.scheme_table.grid(columnspan=3, ipady=20, sticky="we", padx=5,
+                               pady=5)
         self.scheme_table.heading(1, text="Ежемесячно")
         self.scheme_table.heading(2, text="Ежеквартально")
         self.scheme_table.heading(3, text="Раз в полгода")
@@ -42,7 +48,7 @@ class Deposit(Tk):
         self.scheme_table.column(1, width=95)
         self.scheme_table.column(2, width=95)
         self.scheme_table.column(3, width=95)
-        self.scheme_table.column(4, width=95)
+        self.scheme_table.column(4, width=95, minwidth=30)
         self.initial_item = self.scheme_table.insert("", index=END,
                                                      text="Начальная сумма, ₽")
         self.final_item = self.scheme_table.insert("", index=END,
@@ -54,21 +60,24 @@ class Deposit(Tk):
 
         # buttons
         self.button_frame = Frame(self)
-        self.button_frame.grid(row=0, rowspan=3, column=2)
-        self.clear_button = Button(self.button_frame, text="Отчистить")
-        self.clear_button.grid()
+        self.button_frame.grid(row=0, rowspan=3, column=2, sticky="e")
+        self.clear_button = Button(self.button_frame, text="Отчистить",
+                                   command=self.clear, padx=5, pady=5)
+        self.clear_button.grid(padx=15, pady=5, ipadx=30, sticky="we")
         self.calculate_button = Button(self.button_frame, text="Рассчитать",
-                                       command=self.calculate)
-        self.calculate_button.grid()
+                                       command=self.calculate,
+                                       background="#f55",
+                                       activebackground="#e33", padx=5, pady=5)
+        self.calculate_button.grid(padx=15, pady=5, ipadx=30, sticky="we")
 
     def clear(self):
-        self.initial_var.set("")
-        self.rate_var.set("")
-        self.term_var.set("")
-        self.scheme_table.delete(self.initial_item,
-                                 self.final_item,
-                                 self.income_item,
-                                 self.yield_item)
+        self.initial_var.set(0.)
+        self.rate_var.set(0.)
+        self.term_var.set(0.)
+        self.scheme_table.item(self.initial_item, values=())
+        self.scheme_table.item(self.final_item, values=())
+        self.scheme_table.item(self.income_item, values=())
+        self.scheme_table.item(self.yield_item, values=())
 
     def calc_final(self, period):
         init = self.initial_var.get()
@@ -88,15 +97,19 @@ class Deposit(Tk):
 
     def calculate(self):
         set_item = self.scheme_table.item
-        set_item(self.initial_item, values=[self.initial_var.get()] * 4)
-        set_item(self.final_item,
-                 values=list(map(self.calc_final, self.period_lengths)))
-        final_values = self.scheme_table.item(self.final_item)["values"]
-        set_item(self.income_item,
-                 values=list(map(self.calc_income, final_values)))
-        income_values = self.scheme_table.item(self.income_item)["values"]
-        set_item(self.yield_item,
-                 values=list(map(self.calc_yield, income_values)))
+        try:
+            set_item(self.initial_item, values=[self.initial_var.get()] * 4)
+            set_item(self.final_item,
+                     values=list(map(self.calc_final, self.period_lengths)))
+            final_values = self.scheme_table.item(self.final_item)["values"]
+            set_item(self.income_item,
+                     values=list(map(self.calc_income, final_values)))
+            income_values = self.scheme_table.item(self.income_item)["values"]
+            set_item(self.yield_item,
+                     values=list(map(self.calc_yield, income_values)))
+        except TclError as te:
+            messagebox.showerror("Ошибка",
+                                 "Неверное значение в одном из полей")
 
     def show(self):
         self.mainloop()
