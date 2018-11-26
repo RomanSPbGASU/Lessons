@@ -23,10 +23,21 @@ class Adder(Tk):
         self.input_btn.bind("<Return>", self.add_to_numbers)
 
         # output
-        self.folding_numbers_listbox = Listbox(self, justify=CENTER)
-        self.folding_numbers_listbox.grid(columnspan=3, sticky=NSEW)
+        self.folding_numbers_frame = Frame(self, background="#000")
+        self.folding_numbers_frame.grid(columnspan=3, sticky=NSEW)
+        self.folding_numbers_frame.grid_columnconfigure(0, weight=1)
+        self.folding_numbers_frame.grid_rowconfigure(0, weight=1)
+        self.folding_numbers_listbox = Listbox(self.folding_numbers_frame,
+                                               justify=CENTER)
+        self.folding_numbers_listbox.grid(sticky=NSEW)
         self.folding_numbers_listbox.bind("<Delete>", self.del_number)
         self.folding_numbers_listbox.bind("<Return>", self.show_sum)
+        self.folding_numbers_scroll = Scrollbar(self.folding_numbers_frame)
+        self.folding_numbers_scroll.grid(row=0, column=1, sticky="nes")
+        self.folding_numbers_listbox.config(
+            yscrollcommand=self.folding_numbers_scroll.set)
+        self.folding_numbers_scroll.config(
+            command=self.folding_numbers_listbox.yview)
 
         # bottom buttons
         self.delete_btn = Button(self, text="Удалить", command=self.del_number)
@@ -47,7 +58,8 @@ class Adder(Tk):
             print("Введено в Entry:      ", self.input_entry.get())
             print("Сохранено в DoubleVar:", self.input_var.get())
             self.folding_numbers_listbox.insert(END, self.input_var.get())
-            print("Добавлено в Listbox:  ", self.folding_numbers_listbox.get(END))
+            print("Добавлено в Listbox:  ",
+                  self.folding_numbers_listbox.get(END))
             print("_" * 40)
             self.input_var.set("")
         except TclError:
@@ -73,4 +85,3 @@ class Adder(Tk):
 if __name__ == "__main__":
     adder = Adder()
     adder.show()
-
