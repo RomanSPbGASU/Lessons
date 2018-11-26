@@ -20,7 +20,15 @@ class EntryWithPlaceholder(Entry):
         self.insert(0, self.placeholder)
         self.bind("<FocusIn>", self.delete_placeholder)
         self.bind("<FocusOut>", self.past_placeholder)
-        # self.var.trace_add(("read", "write"), self.delete_placeholder)
+        self.var.trace_add("write", self.trace_write)
+
+    def trace_write(self, *args):
+        if self.var.get() != "":
+            self.delete_placeholder()
+            self.delete(0, END)
+            self.insert(0, self.var.get())
+        else:
+            return "break"
 
     def past_placeholder(self, *args):
         if not self.get():
@@ -106,7 +114,7 @@ class ReSaverWindow(Tk):
                            pady=(20, 10), ipadx=30)
 
     def browse_file(self):
-        self.file_path_var.set(filedialog.askopenfilename(
+        self.file_ewp.var.set(filedialog.askopenfilename(
             filetypes=(("All files", "*.*"),
                        ("TXT files", "*.txt"),
                        ("HTML files", "*.html|*.htm"),
@@ -114,9 +122,10 @@ class ReSaverWindow(Tk):
         self.read_file("<Button-1>")
 
     def read_file(self, event):
-        file_path = self.file_path_var.get()
+        file_path = self.file_ewp.var.get()
         try:
             with open(file_path, encoding="utf-8") as file:
+                self.file_content_text.delete(0.0, END)
                 self.file_content_text.insert(0.0, file.read())
         except FileNotFoundError:
             messagebox.showerror("Ошибка",
@@ -124,6 +133,7 @@ class ReSaverWindow(Tk):
         except UnicodeDecodeError:
             try:
                 with open(file_path, encoding="1251") as file:
+                    self.file_content_text.delete(0.0, END)
                     self.file_content_text.insert(0.0, file.read())
             except FileNotFoundError:
                 messagebox.showerror("Ошибка",
@@ -132,10 +142,10 @@ class ReSaverWindow(Tk):
 
     def clear_all(self):
         self.file_content_text.delete(0.0, END)
-        self.file_ewp.delete(0, END)
+        self.file_ewp.var.set("")
 
     def write_file(self, event=None):
-        file_path = self.file_path_var.get()
+        file_path = self.file_ewp.get()
         try:
             if file_path == "":
                 raise ValueError()
