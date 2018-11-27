@@ -20,15 +20,39 @@ class EntryWithPlaceholder(Entry):
         self.insert(0, self.placeholder)
         self.bind("<FocusIn>", self.delete_placeholder)
         self.bind("<FocusOut>", self.past_placeholder)
+        self.bind("<<Change>>", self.on_change)
         self.var.trace_add("write", self.trace_write)
+        self.tk.eval('''
+            proc widget_proxy {widget widget_command args} {
+
+                # call the real tk widget command with the real args
+                set result [uplevel [linsert $args 0 $widget_command]]
+
+                # generate the event for certain types of commands
+                if {([lindex $args 0] in {insert replace delete})} {
+
+                    event generate  $widget <<Change>> -when tail
+                }
+
+                # return the result from the real widget command
+                return $result
+            }
+            ''')
+        self.tk.eval('''
+            rename {widget} _{widget}
+            interp alias {{}} ::{widget} {{}} widget_proxy {widget} _{widget}
+        '''.format(widget=str(self)))
 
     def trace_write(self, *args):
-        if self.var.get() != "":
+        if self.var.get() != self.get():
             self.delete_placeholder()
             self.delete(0, END)
             self.insert(0, self.var.get())
-        else:
-            return "break"
+            self.past_placeholder()
+
+    def on_change(self, *args):
+        if self.get() != self.placeholder:
+            self.var.set(self.get())
 
     def past_placeholder(self, *args):
         if not self.get():
