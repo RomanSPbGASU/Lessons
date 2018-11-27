@@ -15,13 +15,16 @@ class EntryWithPlaceholder(Entry):
             kwargs.pop("textvariable")
         else:
             self.var = StringVar()
+        if kwargs["placeholderfont"]:
+            self.placeholderfont = kwargs["placeholderfont"]
+            kwargs.pop("placeholderfont")
         super().__init__(master, *args, **kwargs)
         self.config(foreground="#aaa")
         self.insert(0, self.placeholder)
         self.bind("<FocusIn>", self.delete_placeholder)
         self.bind("<FocusOut>", self.past_placeholder)
-        self.bind("<<Change>>", self.on_change)
-        self.var.trace_add("write", self.trace_write)
+        # self.bind("<<Change>>", self.on_change)
+        # self.var.trace_add("write", self.trace_write)
         self.tk.eval('''
             proc widget_proxy {widget widget_command args} {
 
@@ -43,22 +46,24 @@ class EntryWithPlaceholder(Entry):
             interp alias {{}} ::{widget} {{}} widget_proxy {widget} _{widget}
         '''.format(widget=str(self)))
 
-    def trace_write(self, *args):
-        if self.var.get() != self.get():
-            self.delete_placeholder()
-            self.delete(0, END)
-            self.insert(0, self.var.get())
-            self.past_placeholder()
-
-    def on_change(self, *args):
-        if self.get() != self.placeholder:
-            self.var.set(self.get())
+    # def trace_write(self, *args):
+    #     try:
+    #         var = self.var.get()
+    #     except TclError as te:
+    #         var = ""
+    #     if var != self.get():
+    #         self.delete_placeholder()
+    #         self.delete(0, END)
+    #         self.insert(0, self.var.get())
+    #         self.past_placeholder()
+    #
+    # def on_change(self, *args):
+    #     if self.get() != self.placeholder:
+    #         self.var.set(self.get())
 
     def past_placeholder(self, *args):
         if not self.get():
             self.delete(0, END)
-            self.insert(0, self.placeholder)
-            self.config(foreground="#aaa")
 
     def delete_placeholder(self, *args):
         if self.get() == self.placeholder:
@@ -79,6 +84,49 @@ class EntryWithPlaceholder(Entry):
     @placeholder.deleter
     def placeholder(self):
         del self._placeholder
+
+    def delete(self, first, last=None):
+        string = str(self.var.get())
+        var = string[:first+1]
+        if last:
+            var += string[last-1:]
+        self.var.set(var)
+        if not var:
+            self.insert(0, self.placeholder)
+            self.config(foreground="#aaa")
+
+    def get(self):
+        return self.var.get()
+
+    def icursor(self, index):
+        if self.get() != self.placeholder:
+            return super().icursor(index)
+        else:
+            return super().icursor(0)
+
+    def index(self, index):
+        if self.get() != self.placeholder:
+            return super().index(index)
+        else:
+            return super().index(0)
+
+    def insert(self, index, string):
+        if string == self.placeholder:
+            self.insert(index, self.placeholder)
+        if string != "":
+            self.delete_placeholder()
+            var = str(self.var.get())
+            head = var[:index]
+            tail = var[index:]
+            self.var.set(head+string+tail)
+
+    def cget(self, key):
+        if key == "placeholder":
+            return self.placeholder
+        if key == "textvariable":
+            return self.var
+        return super().cget(key)
+
 
 
 class ReSaverWindow(Tk):
