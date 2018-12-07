@@ -3,7 +3,9 @@ import tkinter as tk
 import tkinter.filedialog as fd
 
 
-# TODO: разработать класс для проверки эффективности работы нейросети, создающий растровое изображение из случайного фрагмента текстового файла и проверки количества ошибок после распознавания текста нейросетью.
+# TODO: разработать класс для проверки эффективности работы нейросети,
+#  создающий растровое изображение из случайного фрагмента текстового файла
+#  и проверки количества ошибок после распознавания текста нейросетью.
 class Neuron:
     def __init__(self, name, in_arr=tuple([0] * 1024)):
         if len(in_arr) != 1024:
@@ -214,7 +216,7 @@ class Cutter:
                 :param point: итерируемый объект содержащий координаты X и Y
                 :return: None
                 """
-                x, y = point[0]
+                x, y = point[0] #
                 len_y = len(self.contour)
                 bottom_y = self.top_y + len_y - 1
                 if y < self.top_y:
@@ -408,26 +410,26 @@ class Cutter:
             def get_points(self):
                 ...
 
-        marked = self._binarize()
-        width = marked.size[0]
-        height = marked.size[1]
+        marked_bmp = self._binarize()
+        width = marked_bmp.size[0]
+        height = marked_bmp.size[1]
 
         borders = {}  # {region_number: (up, right, bottom, left), ...}
         region_number = 0
         for i in range(height):
             for j in range(width):
                 try:
-                    pixel = marked.getpixel((j, i))
-                    up_l = marked.getpixel((j - 1, i - 1))
-                    up = marked.getpixel((j, i - 1))
-                    up_r = marked.getpixel((j + 1, i - 1))
-                    prev = marked.getpixel((j - 1, i))
+                    pixel = marked_bmp.getpixel((j, i))
+                    up_l = marked_bmp.getpixel((j - 1, i - 1))
+                    up = marked_bmp.getpixel((j, i - 1))
+                    up_r = marked_bmp.getpixel((j + 1, i - 1))
+                    prev = marked_bmp.getpixel((j - 1, i))
                 except IndexError:
                     continue
                 if pixel:
                     if not (up_l or up or up_r or prev):
                         region_number += 1
-                        marked.putpixel((j, i), region_number)
+                        marked_bmp.putpixel((j, i), region_number)
                         borders[region_number] = ((j, i) * 4)
                     else:
                         ...
@@ -449,9 +451,9 @@ if __name__ == "__main__":
     inter = GUI()
     nn.input(...)
 
-    neuron = BIP.BmpImageFile()
+    # neuron = BIP.BmpImageFile()
 
     neuron = Neuron("Example")
     print(neuron)
-    neuron.save_png("D:/Desktop/Python/Lessons-Python/Course_Work/")
+    # neuron.save_png("D:/Desktop/Python/Lessons-Python/Course_Work/")
     neuron.save("D:/Desktop/Python/Lessons Python/Course_Work/")
