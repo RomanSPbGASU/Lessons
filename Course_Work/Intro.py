@@ -161,254 +161,254 @@ class Cutter:
     def cut(self) -> []:
         """ Возвращает связные области бинарного изображения"""
 
-        class Contour:
-            """ Класс для хранения заполненной области изображения """
-
-            def __init__(self):
-                super().__init__()
-                self.top_y = 0
-                self.left_x = 0
-                self.len = 0
-                """ Количество элементов в контуре"""
-                self.contour = []
-                """ Точки контура. Y-координата = top_y + index:
-                [[x1, x2, x3], [x1], [x4, x5, x6], ...]"""
-                self.closed = True
-                """ Замкнутость контура"""
-
-            def __len__(self):
-                return self.len
-
-            def __iter__(self):
-                for row in self.contour:
-                    yield from row
-
-            def __reversed__(self):
-                ...
-                raise AttributeError
-
-            def __contains__(self, item):
-                """
-                Проверяет, относится ли точка к контуру
-
-                :param item: точка
-                :return: True, если относится
-                """
-                x, y = item
-                try:
-                    return Contour.inhere(self.contour[y - self.top_y], x)
-                except IndexError:
-                    return False
-
-            def __add__(self, other):
-                """
-                Объединение объектов
-                """
-                # сначала приведём объекты к одной системе координат
-                # потом удалим точки, ставшие внутренними
-                # TODO: реализовать функцию
-                ...
-
-            def add_to_contour(self, point: tuple) -> None:
-                """
-                Добавление точки контура в объект
-
-                :param point: итерируемый объект содержащий координаты X и Y
-                :return: None
-                """
-                x, y = point[0] #
-                len_y = len(self.contour)
-                bottom_y = self.top_y + len_y - 1
-                if y < self.top_y:
-                    self.contour = [x] + [[]] * (self.top_y - y)
-                    self.len += self.top_y - y + 1
-                    return
-                if y > bottom_y:
-                    self.contour.extend([[]] * (y - bottom_y) + [x])
-                    self.len += self.top_y - y + 1
-                    return
-                current_y = y - self.top_y
-                row = self.contour[current_y]
-                Contour.insort(row, x)
-                self.len += 1
-
-            def is_inside_simple(self, point: tuple) -> bool:
-                """
-                Нахождение точки внутри контра без учёта особых точек
-
-                Осуществляется проведением луча вдоль оси Х и подсчёта
-                пересечений. Работает быстрее, чем is_inside для выпуклых
-                фигур. Однако для невыпуклых фигур дает сбой, если на своём
-                пути луч проходит по касательной к фигуре
-
-                :param point: итерируемый объект содержащий координаты X и Y
-                :return: True, если точка внутри контура (принадлежит ему)
-                """
-                x, y = point
-                current_y = y - self.top_y
-                index = Contour.get_pos(self.contour[current_y], x)
-                try:
-                    if x == self.contour[index]:
-                        return True
-                    else:
-                        return bool(index % 2)
-                except IndexError:
-                    return False
-
-            def is_inside(self, point: tuple) -> bool:
-                """
-                Проверка, находится ли точка внутри контура
-
-                :param point: итерируемый объект содержащий координаты X и Y
-                :return: True, если точка внутри контура (принадлежит ему)
-                """
-                x, y = point
-                current_y = y - self.top_y
-                index = Contour.get_pos(self.contour[current_y], x)
-                if x == self.contour[index]:
-                    return True
-
-                def is_c_point(x, x_offset, y) -> bool:
-                    """
-                    Проверяет принадлежность точки контуру
-
-                    :param x: координата
-                    :param x_offset: смещение координаты x
-                    :param y: координата
-                    :return: True, если принадлежит
-                    """
-                    res = x + x_offset == self.contour[y][
-                        Contour.get_pos(self.contour[y], x) + x_offset]
-                    return res
-
-                crossings = 0
-                for x_coord in self.contour[current_y][:index]:
-                    upper_l = is_c_point(x_coord, -1, current_y - 1)
-                    upper = is_c_point(x_coord, 0, current_y - 1)
-                    upper_r = is_c_point(x_coord, 1, current_y - 1)
-                    lower_l = is_c_point(x_coord, -1, current_y + 1)
-                    lower = is_c_point(x_coord, 0, current_y + 1)
-                    lower_r = is_c_point(x_coord, 1, current_y + 1)
-
-                    if upper_l ^ upper ^ upper_r & lower_l ^ lower ^ lower_r:
-                        crossings += 1
-                return bool(crossings % 2)
-
-            def walk_around_simple(self, start: tuple, clockwise=True):
-                """
-                Обходит контур выпуклой фигуры от заданной точки.
-
-                 Если заданная точка не принадлежит контуру, обход
-                 начинается с ближайшей точки
-
-                :param start: точка от которой начинается обход
-                :param clockwise: направление по часовой стрелке
-                :return:
-                """
-                ...
-
-            def walk_around(self, start: tuple, clockwise=False):
-                """
-                 Обходит контур от заданной точки
-
-                 Если заданная точка не принадлежит контуру, обход
-                 начинается с ближайшей точки
-
-                :param start: точка от которой начинается обход
-                :param clockwise: направление по часовой стрелке
-                :return:
-                """
-                if start not in self.contour:
-                    ...
-                    return
-
-                def bordered_points(point: tuple, first=(-1, -1)):
-                    """
-                    Генерирует соседние точки по часовой стрелке
-
-                    :param point: центральная точка
-                    :param first: начальная точка относительно центральной
-                    """
-                    x, y = point
-                    circle = [[-1, -1], [0, -1], [1, -1],
-                              [1, 0],
-                              [1, 1], [0, 1], [-1, 1],
-                              [-1, 0]]
-                    index = circle.index(first) + 1
-                    for i in circle[index:] + circle[:index]:
-                        yield (i[0] + x, i[1] + y)
-
-                if clockwise:
-                    ...
-                yield start
-                current = start
-                init = [-1, -1]
-                for b_p in bordered_points(current, init):
-                    if self.is_inside(b_p) and b_p not in self:
-                        init = [b_p[i] - c for i, c in enumerate(current)]
-                        break
-                while 1:
-                    for border_point in bordered_points(current, init):
-                        if border_point in self:
-                            init = current
-                            current = border_point
-                    if current == start:
-                        break
-                    yield current
-
-            @staticmethod
-            def get_pos(row: list, val: int) -> int:
-                """
-                Возвращает предполагаемую позицию элемента в ряду
-
-                :param row: итерируемый объект
-                :param val: значение для поиска
-                :return: позиция элемента
-                """
-                start = 0
-                end = len(row)
-                medium = (end - start) // 2
-                while (end - start) >= 1:
-                    if val == row[medium]:
-                        break
-                    if val > row[medium]:
-                        start = medium
-                    else:
-                        end = medium
-                return medium  # +1
-
-            @staticmethod
-            def insort(row: list, val: int) -> int:
-                """
-                Вставляет значение в отсортированный ряд
-
-                :param row: список для вставки
-                :param val: Добавляемое значение
-                :return: индекс добавленного значения в ряду
-                """
-                index = Contour.get_pos(row, val)
-                if val != row[index]:
-                    row.insert(index, val)
-                return index
-
-            @staticmethod
-            def inhere(row: list, val: int) -> bool:
-                """
-                Ищет значение в ряду
-
-                :param row: список для поиска
-                :param val: значение для поиска
-                :return: True, если элемент найден, иначе False
-                """
-                if val == row[Contour.get_pos(row, val)]:
-                    return True
-
-            def get_bitmap(self):
-                """ Получение объекта в виде битового массива"""
-                ...
-
-            def get_points(self):
-                ...
+        # class Contour:
+        #     """ Класс для хранения заполненной области изображения """
+        #
+        #     def __init__(self):
+        #         super().__init__()
+        #         self.top_y = 0
+        #         self.left_x = 0
+        #         self.len = 0
+        #         """ Количество элементов в контуре"""
+        #         self.contour = []
+        #         """ Точки контура. Y-координата = top_y + index:
+        #         [[x1, x2, x3], [x1], [x4, x5, x6], ...]"""
+        #         self.closed = True
+        #         """ Замкнутость контура"""
+        #
+        #     def __len__(self):
+        #         return self.len
+        #
+        #     def __iter__(self):
+        #         for row in self.contour:
+        #             yield from row
+        #
+        #     def __reversed__(self):
+        #         ...
+        #         raise AttributeError
+        #
+        #     def __contains__(self, item):
+        #         """
+        #         Проверяет, относится ли точка к контуру
+        #
+        #         :param item: точка
+        #         :return: True, если относится
+        #         """
+        #         x, y = item
+        #         try:
+        #             return Contour.inhere(self.contour[y - self.top_y], x)
+        #         except IndexError:
+        #             return False
+        #
+        #     def __add__(self, other):
+        #         """
+        #         Объединение объектов
+        #         """
+        #         # сначала приведём объекты к одной системе координат
+        #         # потом удалим точки, ставшие внутренними
+        #         # TODO: реализовать функцию
+        #         ...
+        #
+        #     def add_to_contour(self, point: tuple) -> None:
+        #         """
+        #         Добавление точки контура в объект
+        #
+        #         :param point: итерируемый объект содержащий координаты X и Y
+        #         :return: None
+        #         """
+        #         x, y = point[0] #
+        #         len_y = len(self.contour)
+        #         bottom_y = self.top_y + len_y - 1
+        #         if y < self.top_y:
+        #             self.contour = [x] + [[]] * (self.top_y - y)
+        #             self.len += self.top_y - y + 1
+        #             return
+        #         if y > bottom_y:
+        #             self.contour.extend([[]] * (y - bottom_y) + [x])
+        #             self.len += self.top_y - y + 1
+        #             return
+        #         current_y = y - self.top_y
+        #         row = self.contour[current_y]
+        #         Contour.insort(row, x)
+        #         self.len += 1
+        #
+        #     def is_inside_simple(self, point: tuple) -> bool:
+        #         """
+        #         Нахождение точки внутри контра без учёта особых точек
+        #
+        #         Осуществляется проведением луча вдоль оси Х и подсчёта
+        #         пересечений. Работает быстрее, чем is_inside для выпуклых
+        #         фигур. Однако для невыпуклых фигур дает сбой, если на своём
+        #         пути луч проходит по касательной к фигуре
+        #
+        #         :param point: итерируемый объект содержащий координаты X и Y
+        #         :return: True, если точка внутри контура (принадлежит ему)
+        #         """
+        #         x, y = point
+        #         current_y = y - self.top_y
+        #         index = Contour.get_pos(self.contour[current_y], x)
+        #         try:
+        #             if x == self.contour[index]:
+        #                 return True
+        #             else:
+        #                 return bool(index % 2)
+        #         except IndexError:
+        #             return False
+        #
+        #     def is_inside(self, point: tuple) -> bool:
+        #         """
+        #         Проверка, находится ли точка внутри контура
+        #
+        #         :param point: итерируемый объект содержащий координаты X и Y
+        #         :return: True, если точка внутри контура (принадлежит ему)
+        #         """
+        #         x, y = point
+        #         current_y = y - self.top_y
+        #         index = Contour.get_pos(self.contour[current_y], x)
+        #         if x == self.contour[index]:
+        #             return True
+        #
+        #         def is_c_point(x, x_offset, y) -> bool:
+        #             """
+        #             Проверяет принадлежность точки контуру
+        #
+        #             :param x: координата
+        #             :param x_offset: смещение координаты x
+        #             :param y: координата
+        #             :return: True, если принадлежит
+        #             """
+        #             res = x + x_offset == self.contour[y][
+        #                 Contour.get_pos(self.contour[y], x) + x_offset]
+        #             return res
+        #
+        #         crossings = 0
+        #         for x_coord in self.contour[current_y][:index]:
+        #             upper_l = is_c_point(x_coord, -1, current_y - 1)
+        #             upper = is_c_point(x_coord, 0, current_y - 1)
+        #             upper_r = is_c_point(x_coord, 1, current_y - 1)
+        #             lower_l = is_c_point(x_coord, -1, current_y + 1)
+        #             lower = is_c_point(x_coord, 0, current_y + 1)
+        #             lower_r = is_c_point(x_coord, 1, current_y + 1)
+        #
+        #             if upper_l ^ upper ^ upper_r & lower_l ^ lower ^ lower_r:
+        #                 crossings += 1
+        #         return bool(crossings % 2)
+        #
+        #     def walk_around_simple(self, start: tuple, clockwise=True):
+        #         """
+        #         Обходит контур выпуклой фигуры от заданной точки.
+        #
+        #          Если заданная точка не принадлежит контуру, обход
+        #          начинается с ближайшей точки
+        #
+        #         :param start: точка от которой начинается обход
+        #         :param clockwise: направление по часовой стрелке
+        #         :return:
+        #         """
+        #         ...
+        #
+        #     def walk_around(self, start: tuple, clockwise=False):
+        #         """
+        #          Обходит контур от заданной точки
+        #
+        #          Если заданная точка не принадлежит контуру, обход
+        #          начинается с ближайшей точки
+        #
+        #         :param start: точка от которой начинается обход
+        #         :param clockwise: направление по часовой стрелке
+        #         :return:
+        #         """
+        #         if start not in self.contour:
+        #             ...
+        #             return
+        #
+        #         def bordered_points(point: tuple, first=(-1, -1)):
+        #             """
+        #             Генерирует соседние точки по часовой стрелке
+        #
+        #             :param point: центральная точка
+        #             :param first: начальная точка относительно центральной
+        #             """
+        #             x, y = point
+        #             circle = [[-1, -1], [0, -1], [1, -1],
+        #                       [1, 0],
+        #                       [1, 1], [0, 1], [-1, 1],
+        #                       [-1, 0]]
+        #             index = circle.index(first) + 1
+        #             for i in circle[index:] + circle[:index]:
+        #                 yield (i[0] + x, i[1] + y)
+        #
+        #         if clockwise:
+        #             ...
+        #         yield start
+        #         current = start
+        #         init = [-1, -1]
+        #         for b_p in bordered_points(current, init):
+        #             if self.is_inside(b_p) and b_p not in self:
+        #                 init = [b_p[i] - c for i, c in enumerate(current)]
+        #                 break
+        #         while 1:
+        #             for border_point in bordered_points(current, init):
+        #                 if border_point in self:
+        #                     init = current
+        #                     current = border_point
+        #             if current == start:
+        #                 break
+        #             yield current
+        #
+        #     @staticmethod
+        #     def get_pos(row: list, val: int) -> int:
+        #         """
+        #         Возвращает предполагаемую позицию элемента в ряду
+        #
+        #         :param row: итерируемый объект
+        #         :param val: значение для поиска
+        #         :return: позиция элемента
+        #         """
+        #         start = 0
+        #         end = len(row)
+        #         medium = (end - start) // 2
+        #         while (end - start) >= 1:
+        #             if val == row[medium]:
+        #                 break
+        #             if val > row[medium]:
+        #                 start = medium
+        #             else:
+        #                 end = medium
+        #         return medium  # +1
+        #
+        #     @staticmethod
+        #     def insort(row: list, val: int) -> int:
+        #         """
+        #         Вставляет значение в отсортированный ряд
+        #
+        #         :param row: список для вставки
+        #         :param val: Добавляемое значение
+        #         :return: индекс добавленного значения в ряду
+        #         """
+        #         index = Contour.get_pos(row, val)
+        #         if val != row[index]:
+        #             row.insert(index, val)
+        #         return index
+        #
+        #     @staticmethod
+        #     def inhere(row: list, val: int) -> bool:
+        #         """
+        #         Ищет значение в ряду
+        #
+        #         :param row: список для поиска
+        #         :param val: значение для поиска
+        #         :return: True, если элемент найден, иначе False
+        #         """
+        #         if val == row[Contour.get_pos(row, val)]:
+        #             return True
+        #
+        #     def get_bitmap(self):
+        #         """ Получение объекта в виде битового массива"""
+        #         ...
+        #
+        #     def get_points(self):
+        #         ...
 
         marked_bmp = self._binarize()
         width = marked_bmp.size[0]
