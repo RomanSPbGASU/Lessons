@@ -3,9 +3,6 @@ import tkinter as tk
 import tkinter.filedialog as fd
 
 
-# TODO: разработать класс для проверки эффективности работы нейросети,
-#  создающий растровое изображение из случайного фрагмента текстового файла
-#  и проверки количества ошибок после распознавания текста нейросетью.
 class Neuron:
     def __init__(self, name, in_arr=tuple([0] * 1024)):
         if len(in_arr) != 1024:
@@ -67,32 +64,56 @@ class GUI(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Распознование символов на Python")
-        self.geometry("500x250+200+300")
+        # self.geometry("500x250+200+300")
+        self.resizable(True, True)
+        self.minsize(200, 100)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.columnconfigure(3, weight=1)
+        self.rowconfigure(0, weight=0)
+        self.rowconfigure(1, weight=1)
+        self.rowconfigure(2, weight=0)
+
+        self.filename = tk.StringVar(master=self, value="F_letter.bmp")
+        self.choose_file_entry = tk.Entry(self, textvariable=self.filename)
+        self.choose_file_entry.grid(row=0, columnspan=3, sticky=tk.NSEW)
+
         self.choose_file_btn = tk.Button(self,
                                          text="Выбрать",
                                          background="#555",
                                          foreground="#ccc",
                                          padx="10",
                                          pady="4",
-                                         font="14",
+                                         font=("Consolas", 14),
                                          command=self._show_file_dialog)
-        self.choose_file_btn.pack()
-        self.recognition_btn = tk.Button(self,
-                                         text="Распознать",
-                                         background="#c55",
-                                         foreground="#ccc")
-        self.recognition_btn.pack()
-        self.filename = tk.StringVar(master=self, value="F_letter.bmp")
-        file_entry = tk.Entry(master=self, textvariable=self.filename)
-        file_entry.place(relx=.2, rely=.1, anchor="c")
-        self.count = tk.IntVar(master=self, value=1)
-        count_entry = tk.Entry(master=self, textvariable=self.count)
-        count_entry.place(relx=.2, rely=.3, anchor="c")
-        self.recognized_text = tk.StringVar()
-        self.recognized_entry = tk.Entry(master=self,
-                                         textvariable=self.recognized_text)
-        self.recognized_entry.pack()
-        self.mainloop()
+        self.choose_file_btn.grid(row=0, column=3)
+
+        self.initial_image_canvas = tk.Canvas(self)
+        self.initial_image_canvas.grid(row=1, columnspan=2)
+
+        self.recognized_text = tk.Text(self)
+        self.recognized_text.grid(row=1, column=2, columnspan=2, sticky="nsew")
+
+        self.mark_up_btn = tk.Button(self, text="Разметить", background="#ccc")
+        self.mark_up_btn.grid(row=2, column=0)
+
+        self.recognition_btn = tk.Button(self, text="Распознать",
+                                         background="#c55", foreground="#ccc")
+        self.recognition_btn.grid(row=2, column=1)
+
+        self.clear_btn = tk.Button(self, text="Отчистить")
+        self.clear_btn.grid(row=2, column=2)
+
+        self.save_btn = tk.Button(self, text="Сохранить")
+        self.save_btn.grid(row=2, column=3)
+        # self.count = tk.IntVar(master=self, value=1)
+        # count_entry = tk.Entry(master=self, textvariable=self.count)
+        # count_entry.grid()
+        # self.recognized_text = tk.StringVar()
+        # self.recognized_entry = tk.Entry(master=self,
+        #                                  textvariable=self.recognized_text)
+        # self.recognized_entry.grid()
 
     def _show_file_dialog(self):
         ask_file = fd.askopenfilename
@@ -105,6 +126,9 @@ class GUI(tk.Tk):
 
     def recognise_text(self):
         ...
+
+    def show(self):
+        self.mainloop()
 
 
 class NeuroNet:
@@ -445,10 +469,12 @@ class Region:
 
 
 if __name__ == "__main__":
+    inter = GUI()
+    inter.show()
+
     c = Cutter("Example.bmp")
     c.cut()
     nn = NeuroNet()
-    inter = GUI()
     nn.input(...)
 
     # neuron = BIP.BmpImageFile()
