@@ -11,7 +11,7 @@ class FileManagerWindow(Tk):
         self.minsize(400, 320)
         self.config(background="#eee")
         self.rowconfigure(0, weight=0, minsize=32)
-        self.rowconfigure(1, weight=0, minsize=32)
+        self.rowconfigure(1, weight=0, minsize=38)
         self.rowconfigure(2, weight=0)
         self.rowconfigure(3, weight=0)
         self.rowconfigure(4, weight=0)
@@ -52,35 +52,40 @@ class FileManagerWindow(Tk):
         self.fm_treeview.grid(row=1, column=0, rowspan=8, padx=3, pady=3,
                               sticky=NSEW)
 
+        self.duplicate_text = StringVar(self, "Дублировать")
         self.duplicate_image = PhotoImage(file="Duplicate.png")
-        self.duplicate_btn = Button(self, text="Дублировать",
+        self.duplicate_btn = Button(self, textvariable=self.duplicate_text,
                                     image=self.duplicate_image,
                                     **self.btn_style)
         self.duplicate_btn.grid(row=2, column=1, columnspan=4, sticky=NSEW,
                                 **self.btn_margin)
 
+        self.duplicate_all_text = StringVar(self, "Дублировать всё")
         self.duplicate_all_image = PhotoImage(file="Duplicate_all.png")
-        self.duplicate_all_btn = Button(self, text="Дублировать всё",
-                                        image=self.duplicate_all_image,
+        self.duplicate_all_btn = Button(self, image=self.duplicate_all_image,
+                                        textvariable=self.duplicate_all_text,
                                         **self.btn_style)
         self.duplicate_all_btn.grid(row=3, column=1, columnspan=4, sticky=NSEW,
                                     **self.btn_margin)
 
+        self.del_duplicates_text = StringVar(self, "Удалить дубликаты")
         self.del_duplicates_image = PhotoImage(file="Delete_duplicates.png")
-        self.del_duplicates_btn = Button(self, text="Удалить дубликаты",
-                                         image=self.del_duplicates_image,
+        self.del_duplicates_btn = Button(self, image=self.del_duplicates_image,
+                                         textvariable=self.del_duplicates_text,
                                          **self.btn_style)
         self.del_duplicates_btn.grid(row=4, column=1, columnspan=4,
                                      sticky=NSEW, **self.btn_margin)
 
+        self.rename_text = StringVar(self, "Переименовать")
         self.rename_image = PhotoImage(file="Rename.png")
-        self.rename_btn = Button(self, text="Переименовать",
+        self.rename_btn = Button(self, textvariable=self.rename_text,
                                  image=self.rename_image, **self.btn_style)
         self.rename_btn.grid(row=5, column=1, columnspan=4, sticky=NSEW,
                              **self.btn_margin)
 
+        self.move_file_text = StringVar(self, "Переместить")
         self.move_file_image = PhotoImage(file="Move.png")
-        self.move_file_btn = Button(self, text="Переместить",
+        self.move_file_btn = Button(self, textvariable=self.move_file_text,
                                     image=self.move_file_image,
                                     **self.btn_style)
         self.move_file_btn.grid(row=6, column=1, columnspan=4, sticky=NSEW,
@@ -88,11 +93,33 @@ class FileManagerWindow(Tk):
 
         self.minimized = False
         self.minimize_sidebar_image = PhotoImage(file="Minimize.png")
+        self.maximize_sidebar_image = PhotoImage(file="Maximize.png")
         self.minimize_sidebar_btn = Button(self, width=15, height=20,
                                            image=self.minimize_sidebar_image,
+                                           command=self.change_sidebar_state,
                                            **self.btn_style)
         self.minimize_sidebar_btn.grid(row=8, column=1, sticky=W,
                                        **self.btn_margin)
+
+    def change_sidebar_state(self):
+        if not self.minimized:
+            self.home_btn.grid(row=1, column=1, sticky=NSEW, **self.btn_margin)
+            self.duplicate_text.set("")
+            self.duplicate_all_text.set("")
+            self.del_duplicates_text.set("")
+            self.rename_text.set("")
+            self.move_file_text.set("")
+            self.minimize_sidebar_btn.config(image=self.maximize_sidebar_image)
+            self.minimized = True
+        else:
+            self.home_btn.grid(row=0, column=2, sticky=NSEW, **self.btn_margin)
+            self.duplicate_text.set("Дублировать")
+            self.duplicate_all_text.set("Дублировать всё")
+            self.del_duplicates_text.set("Удалить дубликаты")
+            self.rename_text.set("Переименовать")
+            self.move_file_text.set("Переместить")
+            self.minimize_sidebar_btn.config(image=self.minimize_sidebar_image)
+            self.minimized = False
 
     def open(self):
         self.mainloop()
