@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-import PIL.Image
 from L7.L7E5 import *
 
 
@@ -30,8 +29,11 @@ class FileManagerWindow(Tk):
                           "font": ("AvantGarde", 12), "foreground": "#333",
                           "activeforeground": "#111"}
         self.btn_margin = {"padx": 3, "pady": 3}
+        self.path = StringVar(self, r"D:\Desktop\Python\Lessons "
+                                    r"Python\СV_L\test_hierarchy")
 
-        self.path_entry = Entry(self)
+        self.path_entry = Entry(self, textvariable=self.path,
+                                font=("Arial", 10, "bold"), state=DISABLED)
         self.path_entry.grid(row=0, column=0, padx=3, pady=3, sticky=NSEW)
 
         self.dir_up_image = PhotoImage(file="Dir_up.png")
