@@ -62,6 +62,7 @@ class FileManagerWindow(Tk):
         self.duplicate_text = StringVar(self, "Дублировать")
         self.duplicate_image = PhotoImage(file="Duplicate.png")
         self.duplicate_btn = Button(self, textvariable=self.duplicate_text,
+                                    command=self.duplicate,
                                     image=self.duplicate_image,
                                     **self.btn_style)
         self.duplicate_btn.grid(row=2, column=1, columnspan=4, sticky=NSEW,
@@ -122,8 +123,7 @@ class FileManagerWindow(Tk):
         self.path.set(self.home)
         self.update_fm_treeview()
 
-    def set_path(self, event):
-        item_id = self.fm_treeview.selection()[0]
+    def get_path(self, item_id):
         item = self.fm_treeview.item(item_id)
         path = item["text"]
         parent = self.fm_treeview.parent(item_id)
@@ -132,15 +132,22 @@ class FileManagerWindow(Tk):
             parent = self.fm_treeview.parent(parent)
         path = self.path.get() + (
             "/" if self.path.get()[-1] is not "/" else "") + path
+        return path
+
+    def set_path(self, event):
+        item_id = self.fm_treeview.selection()[0]
+        path = self.get_path(item_id)
         if os.path.isdir(path):
             self.path.set(path)
             self.update_fm_treeview()
 
     def duplicate(self):
-        ...
+        for item_id in self.fm_treeview.selection():
+            duplicate_file(self.get_path(item_id))
+        self.update_fm_treeview()
 
     def init_fm_treeview(self, path, parent=""):
-        for i, item in enumerate(os.listdir(path)):
+        for item in os.listdir(path):
             abs_path = os.path.join(path, item)
             parent_element = self.fm_treeview.insert(parent, "end",
                                                      text=item,
