@@ -1,6 +1,7 @@
 from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
-import os
+
 from L7.L7E5 import *
 
 
@@ -9,6 +10,7 @@ class FileManagerWindow(Tk):
         super().__init__(className=" File Manager")
         self.iconbitmap("Manager.ico")
         self.minsize(400, 320)
+        self.geometry("600x400")
         self.config(background="#eee")
         self.rowconfigure(0, weight=0, minsize=32)
         self.rowconfigure(1, weight=0, minsize=38)
@@ -24,6 +26,7 @@ class FileManagerWindow(Tk):
         self.columnconfigure(2, weight=0)
         self.columnconfigure(3, weight=0)
         self.columnconfigure(4, weight=0)
+        self.columnconfigure(5, weight=0)
         self.btn_style = {"relief": FLAT, "borderwidth": 1,
                           "activebackground": "#eee", "background": "#ccc",
                           "overrelief": RIDGE, "compound": LEFT,
@@ -36,26 +39,31 @@ class FileManagerWindow(Tk):
 
         self.path_entry = Entry(self, textvariable=self.path,
                                 font=("Arial", 10, "bold"), state=DISABLED)
-        self.path_entry.grid(row=0, column=0, padx=3, pady=3, sticky=NSEW)
+        self.path_entry.grid(row=0, column=0, columnspan=2, padx=3, pady=3,
+                             sticky=NSEW)
 
         self.dir_up_image = PhotoImage(file="Dir_up.png")
         self.dir_up_btn = Button(self, name="dir_up", image=self.dir_up_image,
                                  command=self.up_directory,
                                  **self.btn_style)
-        self.dir_up_btn.grid(row=0, column=1, sticky=NSEW, **self.btn_margin)
+        self.dir_up_btn.grid(row=0, column=2, sticky=NSEW, **self.btn_margin)
 
         self.home_image = PhotoImage(file="Home.png")
         self.home_btn = Button(self, name="home",
                                image=self.home_image,
                                command=self.proceed_home_path,
                                **self.btn_style)
-        self.home_btn.grid(row=0, column=2, sticky=NSEW, **self.btn_margin)
+        self.home_btn.grid(row=0, column=3, sticky=NSEW, **self.btn_margin)
 
         self.btn_style["anchor"] = W
         self.btn_style["padx"] = 10
 
-        self.fm_treeview = ttk.Treeview(self, show="tree")
-        self.fm_treeview.grid(row=1, column=0, rowspan=8, padx=3, pady=3,
+        self.fm_scroll = Scrollbar(self)
+        self.fm_scroll.grid(row=1, column=1, rowspan=8, sticky=NSEW)
+        self.fm_treeview = ttk.Treeview(self, show="tree",
+                                        yscrollcommand=self.fm_scroll.set)
+        self.fm_scroll.config(command=self.fm_treeview.yview)
+        self.fm_treeview.grid(row=1, column=0, rowspan=8, padx=(3, 0), pady=3,
                               sticky=NSEW)
         self.fm_treeview.bind("<Double-1>", self.set_path)
 
@@ -65,38 +73,44 @@ class FileManagerWindow(Tk):
                                     command=self.duplicate,
                                     image=self.duplicate_image,
                                     **self.btn_style)
-        self.duplicate_btn.grid(row=2, column=1, columnspan=4, sticky=NSEW,
+        self.duplicate_btn.grid(row=2, column=2, columnspan=4, sticky=NSEW,
                                 **self.btn_margin)
 
         self.duplicate_all_text = StringVar(self, "Дублировать всё")
         self.duplicate_all_image = PhotoImage(file="Duplicate_all.png")
         self.duplicate_all_btn = Button(self, image=self.duplicate_all_image,
                                         textvariable=self.duplicate_all_text,
+                                        command=self.duplicate_all,
                                         **self.btn_style)
-        self.duplicate_all_btn.grid(row=3, column=1, columnspan=4, sticky=NSEW,
+        self.duplicate_all_btn.grid(row=3, column=2, columnspan=4, sticky=NSEW,
                                     **self.btn_margin)
 
         self.del_duplicates_text = StringVar(self, "Удалить дубликаты")
         self.del_duplicates_image = PhotoImage(file="Delete_duplicates.png")
         self.del_duplicates_btn = Button(self, image=self.del_duplicates_image,
                                          textvariable=self.del_duplicates_text,
+                                         command=self.delete_duplicates,
                                          **self.btn_style)
-        self.del_duplicates_btn.grid(row=4, column=1, columnspan=4,
+        self.del_duplicates_btn.grid(row=4, column=2, columnspan=4,
                                      sticky=NSEW, **self.btn_margin)
 
         self.rename_text = StringVar(self, "Переименовать")
         self.rename_image = PhotoImage(file="Rename.png")
         self.rename_btn = Button(self, textvariable=self.rename_text,
-                                 image=self.rename_image, **self.btn_style)
-        self.rename_btn.grid(row=5, column=1, columnspan=4, sticky=NSEW,
+                                 image=self.rename_image, command=self.rename,
+                                 **self.btn_style)
+        self.rename_btn.grid(row=5, column=2, columnspan=4, sticky=NSEW,
                              **self.btn_margin)
 
+        self.moved_file_name = None
         self.move_file_text = StringVar(self, "Переместить")
         self.move_file_image = PhotoImage(file="Move.png")
+        self.move_here_file_image = PhotoImage(file="Move_here.png")
         self.move_file_btn = Button(self, textvariable=self.move_file_text,
                                     image=self.move_file_image,
+                                    command=self.move,
                                     **self.btn_style)
-        self.move_file_btn.grid(row=6, column=1, columnspan=4, sticky=NSEW,
+        self.move_file_btn.grid(row=6, column=2, columnspan=4, sticky=NSEW,
                                 **self.btn_margin)
 
         self.minimized = False
@@ -106,7 +120,7 @@ class FileManagerWindow(Tk):
                                            image=self.minimize_sidebar_image,
                                            command=self.change_sidebar_state,
                                            **self.btn_style)
-        self.minimize_sidebar_btn.grid(row=8, column=1, sticky=W,
+        self.minimize_sidebar_btn.grid(row=8, column=2, sticky=W,
                                        **self.btn_margin)
 
     def update_fm_treeview(self):
@@ -146,6 +160,68 @@ class FileManagerWindow(Tk):
             duplicate_file(self.get_path(item_id))
         self.update_fm_treeview()
 
+    def duplicate_all(self):
+        duplicate_files(self.path.get())
+        self.update_fm_treeview()
+
+    def delete_duplicates(self):
+        del_duplicates(self.path.get())
+        self.update_fm_treeview()
+
+    def rename(self):
+        item_id = self.fm_treeview.selection()[0]
+        path = self.get_path(item_id)
+
+        class MyDialog:
+            def __init__(self, parent):
+                top = self.top = Toplevel(parent)
+                self.top.geometry("150x80")
+                self.top.resizable(False, False)
+                self.top.bind("<Return>", self.send)
+                self.myLabel = Label(top, text='Введите новое имя')
+                self.myLabel.pack()
+
+                self.myEntryBox = Entry(top)
+                self.myEntryBox.pack()
+                self.mySubmitButton = Button(top, text='Переименовать',
+                                             command=self.send)
+                self.mySubmitButton.pack()
+
+            def send(self, event=None):
+                global username
+                username = self.myEntryBox.get()
+                self.top.destroy()
+
+        rename_dialog = MyDialog(self)
+        self.wait_window(rename_dialog.top)
+        try:
+            os.rename(path, os.path.join(os.path.dirname(path), username))
+        except Exception as ex:
+            messagebox.showerror("Ошибка!", ex)
+        self.update_fm_treeview()
+
+    def move(self):
+        if not self.moved_file_name:
+            if not self.fm_treeview.selection()[0]:
+                return
+            item_id = self.fm_treeview.selection()[0]
+            self.moved_file_name = self.get_path(item_id)
+            if self.moved_file_name:
+                self.move_file_btn.config(image=self.move_here_file_image)
+                self.move_file_text.set("Переместить сюда")
+        else:
+            try:
+                os.rename(self.moved_file_name,
+                          os.path.join(self.path.get(), os.path.split(
+                              self.moved_file_name)[1]))
+            except Exception as ex:
+                messagebox.showerror("Ошибка!", ex)
+            else:
+                self.move_file_btn.config(image=self.move_file_image)
+                self.move_file_text.set("Переместить")
+                self.moved_file_name = None
+                self.update_fm_treeview()
+
     def init_fm_treeview(self, path, parent=""):
         for item in os.listdir(path):
             abs_path = os.path.join(path, item)
@@ -157,7 +233,7 @@ class FileManagerWindow(Tk):
 
     def change_sidebar_state(self):
         if not self.minimized:
-            self.home_btn.grid(row=1, column=1, sticky=NSEW, **self.btn_margin)
+            self.home_btn.grid(row=1, column=2, sticky=NSEW, **self.btn_margin)
             self.duplicate_text.set("")
             self.duplicate_all_text.set("")
             self.del_duplicates_text.set("")
@@ -166,7 +242,7 @@ class FileManagerWindow(Tk):
             self.minimize_sidebar_btn.config(image=self.maximize_sidebar_image)
             self.minimized = True
         else:
-            self.home_btn.grid(row=0, column=2, sticky=NSEW, **self.btn_margin)
+            self.home_btn.grid(row=0, column=3, sticky=NSEW, **self.btn_margin)
             self.duplicate_text.set("Дублировать")
             self.duplicate_all_text.set("Дублировать всё")
             self.del_duplicates_text.set("Удалить дубликаты")
