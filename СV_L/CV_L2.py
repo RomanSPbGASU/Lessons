@@ -30,7 +30,7 @@ class FileManagerWindow(Tk):
                           "font": ("AvantGarde", 12), "foreground": "#333",
                           "activeforeground": "#111"}
         self.btn_margin = {"padx": 3, "pady": 3}
-        self.home = r"D:\Desktop\Python\Lessons Python\СV_L\test_hierarchy"
+        self.home = "D:/Desktop/Python/Lessons Python/СV_L/test_hierarchy"
 
         self.path = StringVar(self, self.home)
 
@@ -40,6 +40,7 @@ class FileManagerWindow(Tk):
 
         self.dir_up_image = PhotoImage(file="Dir_up.png")
         self.dir_up_btn = Button(self, name="dir_up", image=self.dir_up_image,
+                                 command=self.up_directory,
                                  **self.btn_style)
         self.dir_up_btn.grid(row=0, column=1, sticky=NSEW, **self.btn_margin)
 
@@ -55,6 +56,7 @@ class FileManagerWindow(Tk):
         self.fm_treeview = ttk.Treeview(self, show="tree")
         self.fm_treeview.grid(row=1, column=0, rowspan=8, padx=3, pady=3,
                               sticky=NSEW)
+        self.fm_treeview.bind("<Double-1>", self.set_path)
 
         self.duplicate_text = StringVar(self, "Дублировать")
         self.duplicate_image = PhotoImage(file="Duplicate.png")
@@ -104,6 +106,31 @@ class FileManagerWindow(Tk):
                                            **self.btn_style)
         self.minimize_sidebar_btn.grid(row=8, column=1, sticky=W,
                                        **self.btn_margin)
+
+    def up_directory(self):
+        if self.path.get() == self.home:
+            return
+        self.path.set(os.path.dirname(self.path.get()))
+        self.fm_treeview.delete(*self.fm_treeview.get_children())
+        self.init_fm_treeview(self.path.get())
+
+    def set_path(self, event):
+        item_id = self.fm_treeview.selection()[0]
+        item = self.fm_treeview.item(item_id)
+        path = item["text"]
+        parent = self.fm_treeview.parent(item_id)
+        while parent:
+            path = self.fm_treeview.item(parent)["text"] + "/" + path
+            parent = self.fm_treeview.parent(parent)
+        path = self.path.get() + (
+            "/" if self.path.get()[-1] is not "/" else "") + path
+        if os.path.isdir(path):
+            self.path.set(path)
+            self.fm_treeview.delete(*self.fm_treeview.get_children())
+            self.init_fm_treeview(self.path.get())
+
+    def duplicate(self):
+        ...
 
     def init_fm_treeview(self, path, parent=""):
         for i, item in enumerate(os.listdir(path)):
