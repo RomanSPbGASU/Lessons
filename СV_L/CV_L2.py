@@ -47,6 +47,7 @@ class FileManagerWindow(Tk):
         self.home_image = PhotoImage(file="Home.png")
         self.home_btn = Button(self, name="home",
                                image=self.home_image,
+                               command=self.proceed_home_path,
                                **self.btn_style)
         self.home_btn.grid(row=0, column=2, sticky=NSEW, **self.btn_margin)
 
@@ -107,12 +108,19 @@ class FileManagerWindow(Tk):
         self.minimize_sidebar_btn.grid(row=8, column=1, sticky=W,
                                        **self.btn_margin)
 
+    def update_fm_treeview(self):
+        self.fm_treeview.delete(*self.fm_treeview.get_children())
+        self.init_fm_treeview(self.path.get())
+
     def up_directory(self):
         if self.path.get() == self.home:
             return
         self.path.set(os.path.dirname(self.path.get()))
-        self.fm_treeview.delete(*self.fm_treeview.get_children())
-        self.init_fm_treeview(self.path.get())
+        self.update_fm_treeview()
+
+    def proceed_home_path(self):
+        self.path.set(self.home)
+        self.update_fm_treeview()
 
     def set_path(self, event):
         item_id = self.fm_treeview.selection()[0]
@@ -126,8 +134,7 @@ class FileManagerWindow(Tk):
             "/" if self.path.get()[-1] is not "/" else "") + path
         if os.path.isdir(path):
             self.path.set(path)
-            self.fm_treeview.delete(*self.fm_treeview.get_children())
-            self.init_fm_treeview(self.path.get())
+            self.update_fm_treeview()
 
     def duplicate(self):
         ...
