@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import os
 from L7.L7E5 import *
 
 
@@ -29,8 +30,9 @@ class FileManagerWindow(Tk):
                           "font": ("AvantGarde", 12), "foreground": "#333",
                           "activeforeground": "#111"}
         self.btn_margin = {"padx": 3, "pady": 3}
-        self.path = StringVar(self, r"D:\Desktop\Python\Lessons "
-                                    r"Python\СV_L\test_hierarchy")
+        self.home = r"D:\Desktop\Python\Lessons Python\СV_L\test_hierarchy"
+
+        self.path = StringVar(self, self.home)
 
         self.path_entry = Entry(self, textvariable=self.path,
                                 font=("Arial", 10, "bold"), state=DISABLED)
@@ -50,7 +52,7 @@ class FileManagerWindow(Tk):
         self.btn_style["anchor"] = W
         self.btn_style["padx"] = 10
 
-        self.fm_treeview = ttk.Treeview(self)
+        self.fm_treeview = ttk.Treeview(self, show="tree")
         self.fm_treeview.grid(row=1, column=0, rowspan=8, padx=3, pady=3,
                               sticky=NSEW)
 
@@ -103,6 +105,15 @@ class FileManagerWindow(Tk):
         self.minimize_sidebar_btn.grid(row=8, column=1, sticky=W,
                                        **self.btn_margin)
 
+    def init_fm_treeview(self, path, parent=""):
+        for i, item in enumerate(os.listdir(path)):
+            abs_path = os.path.join(path, item)
+            parent_element = self.fm_treeview.insert(parent, "end",
+                                                     text=item,
+                                                     open=True)
+            if os.path.isdir(abs_path):
+                self.init_fm_treeview(abs_path, parent_element)
+
     def change_sidebar_state(self):
         if not self.minimized:
             self.home_btn.grid(row=1, column=1, sticky=NSEW, **self.btn_margin)
@@ -123,10 +134,11 @@ class FileManagerWindow(Tk):
             self.minimize_sidebar_btn.config(image=self.minimize_sidebar_image)
             self.minimized = False
 
-    def open(self):
+    def show(self):
+        self.init_fm_treeview(self.path.get())
         self.mainloop()
 
 
 if __name__ == "__main__":
     fm = FileManagerWindow()
-    fm.open()
+    fm.show()
